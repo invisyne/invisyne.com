@@ -8,8 +8,8 @@ This is a **public repository**. Do not commit anything that is not intended for
 
 ## Stack
 
-- Pure HTML/CSS/JS — no build step, no framework
-- Three.js loaded from `https://esm.sh/three@0.167.0` via ES module import
+- Pure HTML/CSS/JS — no build step, no framework, no dependencies
+- Background animation is a hand-rolled 2D-canvas dashboard in `js/scene.js`
 - GT America Extended font, self-hosted as woff2 in `assets/fonts/`
 - Brand tokens defined as CSS custom properties in `css/main.css`
 
