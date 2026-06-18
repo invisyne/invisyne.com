@@ -74,15 +74,71 @@ function scrollPoints(values, phase, w) {
 
 // — Centered multi-line chart (~50% of the window, behind the logo) —
 const CHART_COLS = [C_PRIMARY, C_SECONDARY, '120, 150, 255'];
+const C_ALERT = '235, 51, 36';
+const C_GREY = '116, 107, 125'; // --brand-grey-600
+const THRESHOLD_HI = 0.9;  // upper alert band (fraction of chart height)
+const THRESHOLD_LO = 0.1;  // lower alert band
+const MAX_ALERTS = 2;       // cap how many markers show at once
+const ALERT_MIN_GAP = 360;  // min horizontal px between markers
 const chart = {
   s: CHART_COLS.map((_, i) => walk(90, 0.5 + (i - 1) * 0.12, 0.13)),
   p: [0, 0, 0],
   spd: [6.5, 7.5, 5.5],
 };
 
-function drawChart(dt) {
+// One marker per contiguous out-of-band run, placed at the run's extremum.
+function collectRuns(pts, cx, cy, ch, type, out) {
+  const inBand = type === 'hi' ? (v) => v >= THRESHOLD_HI : (v) => v <= THRESHOLD_LO;
+  const better = type === 'hi' ? (v, b) => v > b : (v, b) => v < b;
+  let i = 0;
+  while (i < pts.length) {
+    if (!inBand(pts[i].val)) { i++; continue; }
+    let j = i, ext = i;
+    while (j < pts.length && inBand(pts[j].val)) {
+      if (better(pts[j].val, pts[ext].val)) ext = j;
+      j++;
+    }
+    out.push({ x: cx + pts[ext].x, y: cy + ch - pts[ext].val * ch, type });
+    i = j;
+  }
+}
+
+function drawAlert(a, alertPulse) {
+  const { x, y, type } = a;
+  const r = 14 * alertPulse;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, `rgba(${C_ALERT}, ${0.85 * alertPulse})`);
+  g.addColorStop(1, `rgba(${C_ALERT}, 0)`);
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x, y, 4, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(${C_ALERT}, 1)`;
+  ctx.fill();
+
+  const dir = type === 'hi' ? -1 : 1; // label above the dot for highs, below for lows
+  const ly = y + dir * 24;
+  ctx.strokeStyle = `rgba(${C_GREY}, 0.5)`;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x, y + dir * 6);
+  ctx.lineTo(x + 18, ly);
+  ctx.lineTo(x + 30, ly);
+  ctx.stroke();
+
+  ctx.font = '400 9px "GT America Extended", sans-serif';
+  ctx.letterSpacing = '1.5px';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = `rgba(${C_GREY}, 0.9)`;
+  ctx.fillText(type === 'hi' ? 'THRESHOLD EXCEEDED' : 'THRESHOLD UNDERRUN', x + 34, ly);
+  ctx.letterSpacing = '0px';
+}
+
+function drawChart(dt, t) {
   const cw = W, ch = H * 0.46;
-  const cx = (W - cw) / 2, cy = (H - ch) / 2 + H * 0.12;
+  const cx = (W - cw) / 2, cy = (H - ch) / 2 + H * 0.16;
 
   ctx.strokeStyle = `rgba(${C_PRIMARY}, 0.05)`;
   ctx.lineWidth = 1;
@@ -94,6 +150,21 @@ function drawChart(dt) {
     ctx.stroke();
   }
 
+  // Alert bands — going above the upper line or below the lower triggers a marker.
+  const tyHi = cy + ch - THRESHOLD_HI * ch;
+  const tyLo = cy + ch - THRESHOLD_LO * ch;
+  ctx.strokeStyle = `rgba(${C_ALERT}, 0.3)`;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([6, 6]);
+  for (const ly of [tyHi, tyLo]) {
+    ctx.beginPath();
+    ctx.moveTo(cx, ly);
+    ctx.lineTo(cx + cw, ly);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+
+  const alerts = [];
   for (let i = 0; i < chart.s.length; i++) {
     chart.p[i] += dt * chart.spd[i];
     while (chart.p[i] >= 1) {
@@ -118,7 +189,22 @@ function drawChart(dt) {
     ctx.arc(lx, ly, 3, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(${CHART_COLS[i]}, 1)`;
     ctx.fill();
+
+    collectRuns(pts, cx, cy, ch, 'hi', alerts);
+    collectRuns(pts, cx, cy, ch, 'lo', alerts);
   }
+
+  // Thin out markers: keep a horizontally spaced subset, capped.
+  alerts.sort((a, b) => a.x - b.x);
+  const shown = [];
+  for (const a of alerts) {
+    if (shown.length && a.x - shown[shown.length - 1].x < ALERT_MIN_GAP) continue;
+    shown.push(a);
+    if (shown.length >= MAX_ALERTS) break;
+  }
+
+  const alertPulse = 0.7 + Math.sin(t * 6) * 0.3;
+  for (const a of shown) drawAlert(a, alertPulse);
 }
 
 function newSignal(initial) {
@@ -250,7 +336,7 @@ function tick(now) {
     ctx.fill();
   }
 
-  drawChart(dt);
+  drawChart(dt, t);
 
   requestAnimationFrame(tick);
 }
