@@ -1,0 +1,81 @@
+@font-face {
+  font-family: 'GT America Extended';
+  font-weight: 500;
+  font-style: normal;
+  src: url('/assets/fonts/GT-America-Extended-Medium.woff2') format('woff2');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT America Extended';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/assets/fonts/GT-America-Extended-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+:root {
+  --brand-grey-950: #191A20;
+  --brand-grey-600: #746B7D;
+  --brand-primary:  #2549FF;
+  --brand-secondary: #BF4DF3;
+  --brand-font-display: 'GT America Extended', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--brand-grey-950);
+}
+
+canvas#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+main {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+main img {
+  width: 200px;
+  height: auto;
+}
+
+.slogan {
+  font-family: var(--brand-font-display);
+  font-weight: 500;
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: #ffffff;
+  max-width: 40ch;
+  line-height: 1.4;
+}
+
+.coming-soon {
+  font-family: var(--brand-font-display);
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--brand-grey-600);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
