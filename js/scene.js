@@ -1,64 +1,44 @@
-// Live-dashboard background: chart panels floating in 3D, animating like real-time
-// data analysis. Pure 2D canvas with a hand-rolled perspective projection.
-// Continuous (sub-pixel) scrolling keeps the motion smooth; panels tilt and drift
-// for depth. Faded toward the center so the logo stays crisp.
+// Full-window machine network: a jittered mesh of drifting nodes with pulsing
+// edges and data packets travelling along the connections. Pure 2D canvas, no
+// dependencies. The center stays calm so the logo and slogan read clearly.
 
 const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
 
 const C_PRIMARY = '37, 73, 255';    // #2549FF
 const C_SECONDARY = '191, 77, 243'; // #BF4DF3
-const C_INK = '25, 26, 32';         // #191A20
 
-const CAM = 1500;   // camera distance
-const FOCAL = 1500; // z = 0 plane renders 1:1
-const LIFT = 26;    // how far data floats above its panel (world units)
+const SPACING = 122;     // target mesh spacing in px
+const MAX_SIGNALS = 60;  // travelling data packets
 
 let W = 0, H = 0;
+let nodes = [], edges = [], signals = [];
 
+const rand = (a, b) => a + Math.random() * (b - a);
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
-
-// — 3D helpers —
-function rot(v, yaw, pitch) {
-  let { x, y, z } = v;
-  const cx = Math.cos(yaw), sx = Math.sin(yaw);
-  let x1 = x * cx + z * sx;
-  let z1 = -x * sx + z * cx;
-  const cb = Math.cos(pitch), sb = Math.sin(pitch);
-  let y1 = y * cb - z1 * sb;
-  let z2 = y * sb + z1 * cb;
-  return { x: x1, y: y1, z: z2 };
-}
-const cross = (a, b) => ({
-  x: a.y * b.z - a.z * b.y,
-  y: a.z * b.x - a.x * b.z,
-  z: a.x * b.y - a.y * b.x,
-});
-
-function project(p) {
-  const zc = Math.max(p.z + CAM, 1);
-  const s = FOCAL / zc;
-  return { x: W / 2 + p.x * s, y: H / 2 + p.y * s, s };
+function smoothstep(e0, e1, x) {
+  const t = clamp((x - e0) / (e1 - e0), 0, 1);
+  return t * t * (3 - 2 * t);
 }
 
-// Build a projector for one panel: local (u,v in px, lift l) -> screen point.
-function makeProjector(panel) {
-  const right = rot({ x: 1, y: 0, z: 0 }, panel.yaw, panel.pitch);
-  const up = rot({ x: 0, y: 1, z: 0 }, panel.yaw, panel.pitch);
-  const n = cross(right, up);
-  const C = panel.center;
-  return (u, v, l = 0) => {
-    const rx = u - panel.w / 2;
-    const ry = v - panel.h / 2;
-    return project({
-      x: C.x + right.x * rx + up.x * ry - n.x * l,
-      y: C.y + right.y * rx + up.y * ry - n.y * l,
-      z: C.z + right.z * rx + up.z * ry - n.z * l,
-    });
-  };
+// Calmer toward the center so the centered logo stays legible.
+function centerFactor(x, y) {
+  const d = Math.hypot(x - W / 2, y - H / 2);
+  const r = Math.min(W, H);
+  return smoothstep(r * 0.12, r * 0.34, d);
 }
 
-// — Smooth data sources —
+// Roaming brightness wave: overlapping sines at different angles/speeds so
+// regions of the mesh light up and dim independently — makes it feel alive.
+function pulse(x, y, t) {
+  const v =
+    Math.sin(x * 0.0042 + t * 0.8) +
+    Math.sin(y * 0.0052 - t * 0.6) +
+    Math.sin((x * 0.6 + y * 0.8) * 0.004 + t * 1.1);
+  return 0.6 + ((v + 3) / 6) * 1.2; // ~0.6 (dim, still visible) .. 1.8 (bright)
+}
+
+// — Smooth data sources (for the centered chart) —
 function walk(n, start = 0.5, step = 0.16) {
   const a = [];
   let x = start;
@@ -92,179 +72,101 @@ function scrollPoints(values, phase, w) {
   return out;
 }
 
-// — Drawing primitives (all in panel-local space, projected via P) —
-function gridlines(P, w, h, rows = 3) {
-  ctx.strokeStyle = `rgba(${C_INK}, 0.05)`;
+// — Centered multi-line chart (~50% of the window, behind the logo) —
+const CHART_COLS = [C_PRIMARY, C_SECONDARY, '120, 150, 255'];
+const chart = {
+  s: CHART_COLS.map((_, i) => walk(90, 0.5 + (i - 1) * 0.12, 0.13)),
+  p: [0, 0, 0],
+  spd: [6.5, 7.5, 5.5],
+};
+
+function drawChart(dt) {
+  const cw = W, ch = H * 0.46;
+  const cx = (W - cw) / 2, cy = (H - ch) / 2 + H * 0.12;
+
+  ctx.strokeStyle = `rgba(${C_PRIMARY}, 0.05)`;
   ctx.lineWidth = 1;
-  for (let i = 1; i < rows; i++) {
-    const y = (h * i) / rows;
-    const a = P(0, y), b = P(w, y);
+  for (let i = 1; i < 4; i++) {
+    const y = cy + (ch * i) / 4;
     ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
+    ctx.moveTo(cx, y);
+    ctx.lineTo(cx + cw, y);
     ctx.stroke();
   }
-}
 
-function lineFromPoints(P, pts, w, h, color, { fill = false, lift = LIFT } = {}) {
-  if (pts.length < 2) return;
-  const sp = pts.map(p => P(p.x, h - p.val * h, lift));
-  if (fill) {
-    const base0 = P(pts[0].x, h, 0);
-    const baseN = P(pts[pts.length - 1].x, h, 0);
+  for (let i = 0; i < chart.s.length; i++) {
+    chart.p[i] += dt * chart.spd[i];
+    while (chart.p[i] >= 1) {
+      chart.p[i] -= 1;
+      chart.s[i].shift();
+      chart.s[i].push(nextVal(chart.s[i], 0.13));
+    }
+    const pts = scrollPoints(chart.s[i], chart.p[i], cw);
+    if (pts.length < 2) continue;
     ctx.beginPath();
-    ctx.moveTo(base0.x, base0.y);
-    for (const s of sp) ctx.lineTo(s.x, s.y);
-    ctx.lineTo(baseN.x, baseN.y);
-    ctx.closePath();
-    ctx.fillStyle = `rgba(${color}, 0.18)`;
+    for (let k = 0; k < pts.length; k++) {
+      const x = cx + pts[k].x, y = cy + ch - pts[k].val * ch;
+      k ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.strokeStyle = `rgba(${CHART_COLS[i]}, 0.7)`;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    const last = pts[pts.length - 1];
+    const lx = cx + last.x, ly = cy + ch - last.val * ch;
+    ctx.beginPath();
+    ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${CHART_COLS[i]}, 1)`;
     ctx.fill();
   }
-  ctx.beginPath();
-  ctx.moveTo(sp[0].x, sp[0].y);
-  for (let i = 1; i < sp.length; i++) ctx.lineTo(sp[i].x, sp[i].y);
-  ctx.strokeStyle = `rgba(${color}, 0.9)`;
-  ctx.lineWidth = clamp(1.6 * sp[sp.length - 1].s, 0.8, 2.6);
-  ctx.lineJoin = 'round';
-  ctx.stroke();
-  const tip = sp[sp.length - 1];
-  ctx.beginPath();
-  ctx.arc(tip.x, tip.y, clamp(2.6 * tip.s, 1.4, 3.4), 0, Math.PI * 2);
-  ctx.fillStyle = `rgba(${color}, 1)`;
-  ctx.fill();
 }
 
-// — Chart factories: each returns { update, draw } —
-function lineChart() {
-  const N = 60;
-  const s1 = walk(N), s2 = walk(N, 0.4);
-  let p1 = 0, p2 = 0;
+function newSignal(initial) {
+  const e = (Math.random() * edges.length) | 0;
   return {
-    update(dt) {
-      p1 += dt * 7;
-      while (p1 >= 1) { p1 -= 1; s1.shift(); s1.push(nextVal(s1)); }
-      p2 += dt * 7;
-      while (p2 >= 1) { p2 -= 1; s2.shift(); s2.push(nextVal(s2)); }
-    },
-    draw(P, w, h) {
-      gridlines(P, w, h);
-      lineFromPoints(P, scrollPoints(s2, p2, w), w, h, C_SECONDARY, { lift: LIFT * 0.5 });
-      lineFromPoints(P, scrollPoints(s1, p1, w), w, h, C_PRIMARY);
-    },
+    e,
+    t: initial ? Math.random() : 0,
+    spd: rand(0.18, 0.5),
+    col: edges[e].col,
+    dir: Math.random() < 0.5 ? 1 : -1,
   };
 }
 
-function areaChart() {
-  const N = 68;
-  const s = walk(N, 0.5, 0.11);
-  let p = 0;
-  return {
-    update(dt) {
-      p += dt * 8;
-      while (p >= 1) { p -= 1; s.shift(); s.push(nextVal(s, 0.11)); }
-    },
-    draw(P, w, h) {
-      gridlines(P, w, h);
-      lineFromPoints(P, scrollPoints(s, p, w), w, h, C_PRIMARY, { fill: true });
-    },
-  };
-}
-
-function barChart() {
-  const N = 14;
-  const bars = walk(N, 0.5, 0.4);
-  const targets = bars.slice();
-  let acc = 0;
-  return {
-    update(dt) {
-      acc += dt;
-      if (acc > 0.45) {
-        acc = 0;
-        targets[(Math.random() * N) | 0] = clamp(0.12 + Math.random() * 0.8, 0.12, 0.92);
-      }
-      for (let i = 0; i < N; i++) bars[i] += (targets[i] - bars[i]) * Math.min(dt * 4, 1);
-    },
-    draw(P, w, h) {
-      const gap = w * 0.012;
-      const bw = (w - gap * (N - 1)) / N;
-      for (let i = 0; i < N; i++) {
-        const x = i * (bw + gap);
-        const topY = h - bars[i] * h;
-        const color = i % 3 === 0 ? C_SECONDARY : C_PRIMARY;
-        // extruded bar: top face plus a front face lifted toward the viewer for 3D
-        const fb = [P(x, h, LIFT), P(x + bw, h, LIFT), P(x + bw, topY, LIFT), P(x, topY, LIFT)];
-        const tb = [P(x, topY, 0), P(x + bw, topY, 0), P(x + bw, topY, LIFT), P(x, topY, LIFT)];
-        ctx.fillStyle = `rgba(${color}, 0.30)`;
-        poly(tb);
-        ctx.fillStyle = `rgba(${color}, 0.72)`;
-        poly(fb);
-      }
-    },
-  };
-}
-
-function poly(p) {
-  ctx.beginPath();
-  ctx.moveTo(p[0].x, p[0].y);
-  for (let i = 1; i < p.length; i++) ctx.lineTo(p[i].x, p[i].y);
-  ctx.closePath();
-  ctx.fill();
-}
-
-function scatterChart() {
-  const N = 26;
-  const pts = Array.from({ length: N }, () => ({
-    x: Math.random(),
-    y: Math.random(),
-    ph: Math.random() * Math.PI * 2,
-    sp: 0.4 + Math.random() * 0.6,
-  }));
-  return {
-    update() {},
-    draw(P, w, h, t) {
-      const slope = 0.55 + Math.sin(t * 0.3) * 0.12;
-      const b = 0.22 + Math.cos(t * 0.22) * 0.06;
-      const a1 = P(0, h - b * h, LIFT);
-      const a2 = P(w, h - (b + slope) * h, LIFT);
-      ctx.beginPath();
-      ctx.moveTo(a1.x, a1.y);
-      ctx.lineTo(a2.x, a2.y);
-      ctx.strokeStyle = `rgba(${C_SECONDARY}, 0.45)`;
-      ctx.setLineDash([4, 4]);
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-      ctx.setLineDash([]);
-      for (const pt of pts) {
-        const ox = Math.sin(t * pt.sp + pt.ph) * 0.02;
-        const oy = Math.cos(t * pt.sp * 0.8 + pt.ph) * 0.02;
-        const sc = P(clamp(pt.x + ox, 0, 1) * w, (1 - clamp(pt.y + oy, 0, 1)) * h, LIFT);
-        ctx.beginPath();
-        ctx.arc(sc.x, sc.y, clamp(2.4 * sc.s, 1.3, 3.2), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${C_PRIMARY}, 0.72)`;
-        ctx.fill();
-      }
-    },
-  };
-}
-
-// — Layout: one chart per quadrant, each ~25% of the page, tilted to face center —
-const defs = [
-  { obj: lineChart(),    fx: 0.26, fy: 0.27, fw: 0.46, fh: 0.42, yaw: 0.30,  pitch: -0.09, cz: 40 },
-  { obj: scatterChart(), fx: 0.74, fy: 0.27, fw: 0.46, fh: 0.42, yaw: -0.30, pitch: -0.09, cz: 40 },
-  { obj: barChart(),     fx: 0.26, fy: 0.73, fw: 0.46, fh: 0.42, yaw: 0.30,  pitch: 0.09,  cz: 40 },
-  { obj: areaChart(),    fx: 0.74, fy: 0.73, fw: 0.46, fh: 0.42, yaw: -0.30, pitch: 0.09,  cz: 40 },
-];
-
-function panelOf(d, t) {
-  const w = d.fw * W, h = d.fh * H;
-  const drift = Math.sin(t * 0.4 + d.fx * 7) * 0.06;
-  const bob = Math.cos(t * 0.5 + d.fy * 5) * 0.04;
-  return {
-    w, h,
-    yaw: d.yaw + drift,
-    pitch: d.pitch + bob,
-    center: { x: (d.fx - 0.5) * W, y: (d.fy - 0.5) * H, z: d.cz },
-  };
+function build() {
+  nodes = [];
+  edges = [];
+  const cols = Math.ceil(W / SPACING) + 2;
+  const rows = Math.ceil(H / SPACING) + 2;
+  const ox = (W - (cols - 1) * SPACING) / 2;
+  const oy = (H - (rows - 1) * SPACING) / 2;
+  const grid = [];
+  for (let r = 0; r < rows; r++) {
+    grid[r] = [];
+    for (let c = 0; c < cols; c++) {
+      const bx = ox + c * SPACING + rand(-SPACING * 0.22, SPACING * 0.22);
+      const by = oy + r * SPACING + rand(-SPACING * 0.22, SPACING * 0.22);
+      grid[r][c] = nodes.length;
+      nodes.push({
+        bx, by, x: bx, y: by,
+        phase: rand(0, Math.PI * 2),
+        amp: rand(5, 14),
+        spd: rand(0.15, 0.5),
+      });
+    }
+  }
+  const link = (a, b) =>
+    edges.push({ a, b, col: Math.random() < 0.3 ? C_SECONDARY : C_PRIMARY });
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cur = grid[r][c];
+      if (c + 1 < cols) link(cur, grid[r][c + 1]);
+      if (r + 1 < rows) link(cur, grid[r + 1][c]);
+      if (r + 1 < rows && c + 1 < cols) link(cur, grid[r + 1][c + 1]);
+      if (r + 1 < rows && c - 1 >= 0) link(cur, grid[r + 1][c - 1]);
+    }
+  }
+  signals = [];
+  for (let i = 0; i < MAX_SIGNALS; i++) signals.push(newSignal(true));
 }
 
 function resize() {
@@ -276,9 +178,12 @@ function resize() {
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  build();
 }
 resize();
 addEventListener('resize', resize);
+
+const MAX_LEN = SPACING * 1.7;
 
 let last = performance.now();
 function tick(now) {
@@ -288,20 +193,64 @@ function tick(now) {
 
   ctx.clearRect(0, 0, W, H);
 
-  for (const d of defs) {
-    d.obj.update(dt);
-    const panel = panelOf(d, t);
-    const P = makeProjector(panel);
-    d.obj.draw(P, panel.w, panel.h, t);
+  for (const n of nodes) {
+    n.x = n.bx + Math.sin(t * n.spd + n.phase) * n.amp;
+    n.y = n.by + Math.cos(t * n.spd * 0.85 + n.phase) * n.amp;
   }
 
-  // Radial white wash keeps the centered logo clean.
-  const g = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, Math.max(W, H) * 0.42);
-  g.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-  g.addColorStop(0.45, 'rgba(255, 255, 255, 0.55)');
-  g.addColorStop(1, 'rgba(255, 255, 255, 0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
+  // Edges
+  ctx.lineWidth = 1;
+  for (const e of edges) {
+    const a = nodes[e.a], b = nodes[e.b];
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    const cf = centerFactor(mx, my);
+    if (cf <= 0.002) continue;
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    const alpha = 0.22 * clamp(1 - len / MAX_LEN, 0, 1) * cf * pulse(mx, my, t);
+    if (alpha < 0.004) continue;
+    ctx.strokeStyle = `rgba(${e.col}, ${alpha})`;
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+
+  // Nodes
+  for (const n of nodes) {
+    const cf = centerFactor(n.x, n.y);
+    if (cf <= 0.02) continue;
+    const pl = pulse(n.x, n.y, t);
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, 0.9 + pl * 0.55, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${C_PRIMARY}, ${clamp(0.22 * cf * pl, 0, 1)})`;
+    ctx.fill();
+  }
+
+  // Travelling data packets
+  for (const s of signals) {
+    s.t += dt * s.spd;
+    if (s.t >= 1) Object.assign(s, newSignal(false));
+    const e = edges[s.e];
+    const a = nodes[e.a], b = nodes[e.b];
+    const tt = s.dir > 0 ? s.t : 1 - s.t;
+    const x = a.x + (b.x - a.x) * tt;
+    const y = a.y + (b.y - a.y) * tt;
+    const cf = centerFactor(x, y);
+    if (cf <= 0.02) continue;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, 7);
+    g.addColorStop(0, `rgba(${s.col}, ${0.85 * cf})`);
+    g.addColorStop(1, `rgba(${s.col}, 0)`);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(x, y, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${s.col}, ${cf})`;
+    ctx.fill();
+  }
+
+  drawChart(dt);
 
   requestAnimationFrame(tick);
 }

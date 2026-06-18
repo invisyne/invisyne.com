@@ -9,7 +9,7 @@ This is a **public repository**. Do not commit anything that is not intended for
 ## Stack
 
 - Pure HTML/CSS/JS — no build step, no framework, no dependencies
-- Background animation is a hand-rolled 2D-canvas dashboard in `js/scene.js`
+- Background animation is a hand-rolled 2D-canvas node network plus a centered multi-line chart in `js/scene.js`
 - GT America Extended font, self-hosted as woff2 in `assets/fonts/`
 - Brand tokens defined as CSS custom properties in `css/main.css`
 
