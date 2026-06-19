@@ -8,7 +8,7 @@ Coming soon placeholder. The full site is in development.
 
 ## Local development
 
-Requires a local HTTP server (ES modules don't work over `file://`):
+Requires a local HTTP server (the absolute asset paths don't resolve over `file://`):
 
 ```bash
 python3 -m http.server 8080
