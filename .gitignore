@@ -1,3 +1,6 @@
 .claude/settings.local.json
 .DS_Store
 node_modules/
+
+# Internal design specs — not for the public web (see CLAUDE.md)
+docs/superpowers/

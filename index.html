@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invisyne — Where machine memory becomes operational intelligence.</title>
-  <meta name="description" content="Where machine memory becomes operational intelligence.">
+  <meta name="description" content="Invisyne turns the continuous behavior of your machines into the foundation for faster diagnosis, fewer failures, and new service models — across every machine you make or operate.">
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -17,11 +17,281 @@
 </head>
 <body>
   <canvas id="bg"></canvas>
-  <main>
-    <img src="/assets/logos/invisyne-wordmark-color-pos.svg" alt="Invisyne" width="200">
-    <p class="slogan">Where machine memory becomes operational intelligence.</p>
-    <p class="coming-soon">Coming soon</p>
+
+  <!-- ===== Sticky nav (reveals on scroll) ===== -->
+  <header class="nav" id="nav">
+    <a class="nav-brand" href="#top" aria-label="Invisyne — home">
+      <img src="/assets/logos/invisyne-wordmark-color-pos.svg" alt="Invisyne" width="132">
+    </a>
+    <nav class="nav-links">
+      <a href="#products">Products</a>
+      <a href="#why">Why Invisyne</a>
+      <a href="#latest">Latest</a>
+      <a href="https://hub.invisyne.com" target="_blank" rel="noopener">Hub ↗</a>
+      <a href="https://docs.invisyne.com" target="_blank" rel="noopener">Docs ↗</a>
+      <a class="btn btn-primary btn-sm" href="mailto:info@invisyne.com?subject=Invisyne%20request%20a%20demo&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AI%27d%20like%20to%20request%20a%20demo.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20use%20case%3A%0D%0APreferred%20time%3A%0D%0A">Request a demo</a>
+    </nav>
+  </header>
+
+  <main id="top">
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+      <div class="hero-inner">
+        <img class="hero-mark" src="/assets/logos/invisyne-wordmark-color-pos.svg" alt="Invisyne" width="300">
+        <h1 class="hero-title">Where machine memory becomes operational intelligence.</h1>
+        <p class="hero-sub">Invisyne turns the continuous behavior of your machines into the foundation for faster diagnosis, fewer failures, and new service models — across every machine you make or operate.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="mailto:info@invisyne.com?subject=Invisyne%20request%20a%20demo&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AI%27d%20like%20to%20request%20a%20demo.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20use%20case%3A%0D%0APreferred%20time%3A%0D%0A">Request a demo</a>
+          <a class="btn btn-ghost" href="https://hub.invisyne.com" target="_blank" rel="noopener">Open Hub →</a>
+          <a class="btn btn-ghost" href="https://docs.invisyne.com" target="_blank" rel="noopener">Read the docs →</a>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#shift" aria-label="Scroll down">
+        <span></span>
+      </a>
+    </section>
+
+    <!-- ===== THE SHIFT ===== -->
+    <section class="section shift" id="shift">
+      <div class="wrap">
+        <p class="kicker">The shift</p>
+        <h2 class="shift-head">Give your machines a continuous memory — and turn it into the intelligence that runs your operation.</h2>
+        <p class="lede">Most OEMs and operators already have machine data. But data alone doesn't explain how a machine behaves — that's why commissioning drags, troubleshooting depends on a few experts, and service is hard to scale. Invisyne adds the understanding on top of the connectivity you already have.</p>
+      </div>
+    </section>
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <section class="section how" id="how">
+      <div class="wrap">
+        <p class="kicker">How it works</p>
+        <h2 class="section-head">One continuous chain — from the signal to the outcome.</h2>
+        <div class="flow" aria-label="Signals to Context to Insights to Actions">
+          <article class="flow-step">
+            <div class="tile-label"><span class="dot"></span>01 · Signals</div>
+            <h3>Capture</h3>
+            <p>Raw machine data — measurements, states, events — captured at the source.</p>
+            <span class="flow-tag">Crawler</span>
+          </article>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <article class="flow-step">
+            <div class="tile-label"><span class="dot"></span>02 · Context</div>
+            <h3>Enrich</h3>
+            <p>Every signal gets structure, lifecycle and operating context — so behavior becomes comparable.</p>
+            <span class="flow-tag">Hub</span>
+          </article>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <article class="flow-step">
+            <div class="tile-label"><span class="dot"></span>03 · Insights</div>
+            <h3>Understand</h3>
+            <p>Patterns, deviations and root causes become visible — not guessed.</p>
+            <span class="flow-tag">Deepview</span>
+          </article>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <article class="flow-step">
+            <div class="tile-label"><span class="dot"></span>04 · Actions</div>
+            <h3>Act</h3>
+            <p>Better decisions, earlier interventions, and the foundation for new service models.</p>
+            <span class="flow-tag">Hub · Roadmap</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== PRODUCTS ===== -->
+    <section class="section products" id="products">
+      <div class="wrap">
+        <p class="kicker">Products</p>
+        <h2 class="section-head">Four products. One continuous machine memory.</h2>
+        <div class="product-grid">
+
+          <article class="tile product">
+            <div class="tile-label"><span class="dot"></span>Capture</div>
+            <h3 class="product-logo"><img src="/assets/logos/products/edge-wordmark-color-pos.svg" alt="Edge" height="28"></h3>
+            <p class="product-tag">The machine's memory.</p>
+            <p class="product-desc">Captures at the source — Siemens S7, Modbus, OPC UA, MQTT — up to 5,000 variables per second at 50 ms. Local-first, with no cloud dependency.</p>
+          </article>
+
+          <article class="tile product">
+            <div class="tile-label"><span class="dot"></span>Platform</div>
+            <h3 class="product-logo"><img src="/assets/logos/products/hub-wordmark-color-pos.svg" alt="Hub" height="28"></h3>
+            <p class="product-tag">Manage the fleet.</p>
+            <p class="product-desc">A secure web platform for the whole Edge fleet — device status, firmware, users and roles, dashboards and alerts. The command center for cross-machine intelligence.</p>
+            <a class="tile-link" href="https://hub.invisyne.com" target="_blank" rel="noopener">Open Hub ↗</a>
+          </article>
+
+          <article class="tile product">
+            <div class="tile-label"><span class="dot"></span>Analysis</div>
+            <h3 class="product-logo"><img src="/assets/logos/products/deepview-wordmark-color-pos.svg" alt="Deepview" height="28"></h3>
+            <p class="product-tag">From symptom to cause.</p>
+            <p class="product-desc">Root-cause analysis on dense, high-frequency time series. Compare Runs — batches, shifts, periods — across machines to turn data into answers.</p>
+          </article>
+
+          <article class="tile product">
+            <div class="tile-label"><span class="dot"></span>On-site</div>
+            <h3 class="product-logo"><img src="/assets/logos/products/companion-wordmark-color-pos.svg" alt="Companion" height="28"></h3>
+            <p class="product-tag">On-site control.</p>
+            <p class="product-desc">A Windows app to discover, configure, update and export from Edge devices — entirely on the local network, no cloud needed. Built for field and commissioning engineers.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== BENEFITS ===== -->
+    <section class="section benefits" id="benefits">
+      <div class="wrap">
+        <p class="kicker">Benefits</p>
+        <h2 class="section-head">Whether you build machines or operate them — the same memory becomes your advantage.</h2>
+        <div class="benefit-grid">
+          <article class="tile benefit">
+            <h3>Faster commissioning</h3>
+            <p>A clean behavioral baseline from day one — less trial-and-error, earlier stable operation, better handover.</p>
+          </article>
+          <article class="tile benefit">
+            <h3>Less downtime</h3>
+            <p>Full machine history before anyone touches a component. Faster root cause, less dependency on a few experts.</p>
+          </article>
+          <article class="tile benefit">
+            <h3>Fleet-wide clarity</h3>
+            <p>Compare behavior systematically across machines and sites — and catch deviations early, not after failure.</p>
+          </article>
+          <article class="tile benefit">
+            <h3>New service business</h3>
+            <p>The data foundation for condition-based maintenance, remote diagnosis, SLAs and product-as-a-service.</p>
+          </article>
+
+          <article class="tile kpi" aria-label="Key metrics">
+            <div class="tile-label"><span class="dot"></span>Proof · live</div>
+            <div class="kpi-number"><span id="kpiVal">0</span><span class="kpi-unit" id="kpiUnit">+</span></div>
+            <div class="kpi-label" id="kpiLabel">devices deployed in the field</div>
+            <div class="kpi-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== WHY INVISYNE ===== -->
+    <section class="section why" id="why">
+      <div class="wrap">
+        <p class="kicker">Why Invisyne</p>
+        <h2 class="why-head">Gateways connect. IIoT visualises. SCADA monitors.<br><em>Invisyne remembers</em> — in context, continuously, across years.</h2>
+        <div class="why-grid">
+          <div class="why-points">
+            <p class="why-claim">Not another dashboard. A system that runs from day one — no data stack to build, no project to staff.</p>
+            <ul class="why-list">
+              <li><strong>High-frequency edge capture</strong> — 5,000 variables/sec at 50 ms, on existing connectivity.</li>
+              <li><strong>Continuous machine memory</strong> — a persistent, queryable history from commissioning forward.</li>
+              <li><strong>Lifecycle perspective</strong> — commissioning → operation → maintenance → troubleshooting → decisions.</li>
+              <li><strong>Out-of-the-box value</strong> — first value within a single commissioning project, not an 18-month build.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== LATEST ===== -->
+    <section class="section latest" id="latest">
+      <div class="wrap">
+        <p class="kicker">Latest</p>
+        <h2 class="section-head">The platform ships continuously.</h2>
+        <p class="lede">Three components, three changelogs. Here's what shipped most recently — open any card for the full release history.</p>
+        <div class="release-grid">
+
+          <a class="tile release" href="https://docs.invisyne.com/de/edge/changelog/" target="_blank" rel="noopener">
+            <div class="release-head">
+              <span class="release-name">Edge <span class="release-sub">· Crawler</span></span>
+              <span class="release-ver">v2.21.0</span>
+            </div>
+            <ul class="release-list">
+              <li><span class="release-date">16 Apr 2026 · 2.21.0</span> Runs — full Run-data CSV export, run configuration in the UI, manual gateway reconnect.</li>
+              <li><span class="release-date">03 Mar 2026 · 2.20.0</span> OPC UA connector with secured connections and variable explorer.</li>
+            </ul>
+            <span class="release-link">View changelog ↗</span>
+          </a>
+
+          <a class="tile release" href="https://docs.invisyne.com/de/hub/changelog/" target="_blank" rel="noopener">
+            <div class="release-head">
+              <span class="release-name">Hub</span>
+              <span class="release-ver">v1.3.0</span>
+            </div>
+            <ul class="release-list">
+              <li><span class="release-date">16 Apr 2026 · 1.3.0</span> Redesigned software section with per-version detail pages; account-request link on login.</li>
+              <li><span class="release-date">19 Mar 2026 · 1.2.0</span> Release dates on firmware versions; software-area display fixes.</li>
+            </ul>
+            <span class="release-link">View changelog ↗</span>
+          </a>
+
+          <a class="tile release" href="https://docs.invisyne.com/de/companion/changelog/" target="_blank" rel="noopener">
+            <div class="release-head">
+              <span class="release-name">Companion</span>
+              <span class="release-ver">v1.1.0</span>
+            </div>
+            <ul class="release-list">
+              <li><span class="release-date">16 Apr 2026 · 1.1.0</span> Run-data export — download measurement data as CSV over defined periods.</li>
+              <li><span class="release-date">27 Mar 2026 · 1.0.2</span> First release — automatic Edge-device discovery on the local network.</li>
+            </ul>
+            <span class="release-link">View changelog ↗</span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FINAL CTA ===== -->
+    <section class="section cta" id="cta">
+      <div class="wrap cta-inner">
+        <h2 class="cta-head">Let's see it on your machines.</h2>
+        <p class="cta-sub">Pick one machine, one site. We pre-configure, install in a day, and agree clear success criteria.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="mailto:info@invisyne.com?subject=Invisyne%20request%20a%20demo&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AI%27d%20like%20to%20request%20a%20demo.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20use%20case%3A%0D%0APreferred%20time%3A%0D%0A">Request a demo</a>
+          <a class="btn btn-ghost" href="https://hub.invisyne.com" target="_blank" rel="noopener">Open Hub →</a>
+          <a class="btn btn-ghost" href="https://docs.invisyne.com" target="_blank" rel="noopener">Read the docs →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER + IMPRINT ===== -->
+    <footer class="footer" id="imprint">
+      <div class="wrap">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <img class="footer-mark" src="/assets/logos/invisyne-wordmark-color-pos.svg" alt="Invisyne" width="140">
+            <p class="footer-tagline">Where machine memory becomes operational intelligence.</p>
+          </div>
+          <div class="imprint">
+            <p class="imprint-title">Imprint</p>
+            <div class="imprint-cols">
+              <address class="imprint-entity">
+                <strong><a href="https://www.dr-ecklebe.de" target="_blank" rel="noopener">Dr. Ecklebe GmbH</a></strong>
+                Brockenblick 29<br>
+                38855 Wernigerode OT Reddeber, Germany<br>
+                <span class="imprint-meta">Amtsgericht Stendal · HRB 100778 · VAT&nbsp;DE&nbsp;139575472</span><br>
+                <a href="tel:+4939435606 0">+49 (0) 3943 5606 0</a> · <a href="mailto:mail@dr-ecklebe.de">mail@dr-ecklebe.de</a>
+              </address>
+              <address class="imprint-entity">
+                <strong><a href="https://www.ecklebeautomation.com" target="_blank" rel="noopener">ECKLEBE Automation Inc.</a></strong>
+                1 Concourse Pkwy, Suite 800<br>
+                Atlanta, GA 30328, USA<br>
+                <a href="tel:+18328892486">+1 (832) 889-2486</a>
+              </address>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <div class="footer-links">
+            <a href="https://hub.invisyne.com" target="_blank" rel="noopener">Hub</a>
+            <a href="https://docs.invisyne.com" target="_blank" rel="noopener">Docs</a>
+            <a href="#imprint">Imprint</a>
+          </div>
+          <p class="footer-meta">© 2026 Invisyne · invisyne.com</p>
+        </div>
+      </div>
+    </footer>
+
   </main>
+
   <script src="/js/scene.js"></script>
+  <script src="/js/site.js"></script>
 </body>
 </html>
