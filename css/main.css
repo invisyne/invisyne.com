@@ -116,7 +116,6 @@ a { color: inherit; }
 
 .section-head {
   font-size: clamp(1.6rem, 3.4vw, 2.5rem);
-  max-width: 22ch;
 }
 
 .lede {
@@ -241,6 +240,30 @@ a { color: inherit; }
 .nav-links a.btn { font-family: var(--brand-font-display); text-transform: none; color: #fff; letter-spacing: 0; }
 .nav-links a.btn:hover { color: #fff; }
 
+.lang-switch {
+  display: inline-flex;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 3px;
+  backdrop-filter: blur(6px);
+}
+.lang-switch button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink-dim);
+  padding: 0.3rem 0.6rem;
+  border-radius: 999px;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+.lang-switch button.on { background: var(--accent); color: #fff; }
+
 /* ===========================================
    HERO
    =========================================== */
@@ -319,9 +342,10 @@ a { color: inherit; }
    =========================================== */
 .shift-head {
   font-size: clamp(1.8rem, 4.2vw, 3rem);
-  max-width: 18ch;
+  max-width: 52rem;
   margin-bottom: 1.6rem;
 }
+.shift .lede { max-width: 52rem; }
 
 /* ===========================================
    HOW IT WORKS — flow
@@ -421,11 +445,12 @@ a { color: inherit; }
   display: inline-block;
 }
 .tile-link:hover { text-decoration: underline; }
+.products-note { margin-bottom: 2.6rem; }
 
 /* ===========================================
    BENEFITS
    =========================================== */
-.benefits .section-head { margin-bottom: 2.6rem; max-width: 26ch; }
+.benefits .section-head { margin-bottom: 2.6rem; }
 .benefit-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -439,16 +464,44 @@ a { color: inherit; }
 }
 .benefit p { font-size: 0.95rem; color: var(--ink-dim); }
 
+/* ===========================================
+   USE CASES
+   =========================================== */
+.usecases .section-head { margin-bottom: 1rem; }
+.usecase-note { margin-bottom: 2.6rem; }
+.usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+}
+.usecase h3 {
+  font-family: var(--brand-font-display);
+  font-weight: 500;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+.usecase p { font-size: 0.95rem; color: var(--ink-dim); }
+
 .kpi {
-  grid-column: span 2;
+  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: var(--brand-grey-950);
+  background: var(--brand-primary);
   border-color: transparent;
   color: #fff;
 }
-.kpi .tile-label { color: rgba(255, 255, 255, 0.6); }
+.kpi .tile-label { color: rgba(255, 255, 255, 0.7); }
+.kpi .tile-label .dot { background: #fff; box-shadow: 0 0 12px rgba(255, 255, 255, 0.8); }
+.kpi-banner {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.kpi-text { display: flex; flex-direction: column; }
+.kpi-banner .kpi-bars { width: clamp(180px, 34%, 360px); height: 56px; margin-top: 0; }
 .kpi-number {
   font-family: var(--brand-font-display);
   font-weight: 500;
@@ -459,11 +512,11 @@ a { color: inherit; }
   gap: 0.3rem;
   margin-top: 0.8rem;
 }
-.kpi-unit { font-size: 0.4em; color: var(--brand-secondary); font-style: italic; }
-.kpi-label { font-size: 1rem; color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem; }
+.kpi-unit { font-size: 0.4em; color: var(--brand-tertiary-1); font-style: italic; }
+.kpi-label { font-size: 1rem; color: rgba(255, 255, 255, 0.85); margin-top: 0.5rem; }
 .kpi-bars { display: flex; align-items: flex-end; gap: 5px; height: 26px; margin-top: 1.2rem; }
 .kpi-bars span {
-  flex: 1; background: var(--accent); border-radius: 2px; height: 100%;
+  flex: 1; background: rgba(255, 255, 255, 0.9); border-radius: 2px; height: 100%;
   transform-origin: bottom; animation: barbreath 2.4s ease-in-out infinite;
 }
 .kpi-bars span:nth-child(2) { animation-delay: 0.1s; }
@@ -480,43 +533,41 @@ a { color: inherit; }
 /* ===========================================
    WHY INVISYNE
    =========================================== */
-.why-head {
-  font-size: clamp(1.7rem, 3.8vw, 2.8rem);
-  max-width: 24ch;
-  margin-bottom: 2.6rem;
-}
-.why-head em { font-style: italic; color: var(--accent); }
-.why-claim {
-  font-family: var(--brand-font-display);
-  font-weight: 400;
-  font-size: 1.3rem;
-  color: var(--ink);
-  margin-bottom: 1.8rem;
-  max-width: 40ch;
-}
-.why-list {
-  list-style: none;
+.why-head { margin-bottom: 1rem; }
+.why .lede { margin-bottom: 2.6rem; }
+.accent { color: var(--accent); }
+
+/* Feature cards (Pitch-Deck_Feature-Cards_1/4) */
+.feature-cards {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem 2.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
 }
-.why-list li {
-  font-size: 0.98rem;
+.feature-card {
+  background: var(--tile-bg);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 32px;
+}
+.feature-tag {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: 1.4rem;
+}
+.feature-card h3 {
+  font-family: var(--brand-font-display);
+  font-weight: 500;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  margin-bottom: 0.7rem;
+}
+.feature-body {
+  font-size: 0.95rem;
   color: var(--ink-dim);
-  padding-left: 1.2rem;
-  position: relative;
+  line-height: 1.55;
 }
-.why-list li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.6em;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-.why-list strong { color: var(--ink); font-weight: 600; }
 
 /* ===========================================
    LATEST — release cards
@@ -692,16 +743,21 @@ a { color: inherit; }
   .flow { flex-direction: column; }
   .flow-arrow { transform: rotate(90deg); }
   .product-grid { grid-template-columns: 1fr; }
-  .benefit-grid { grid-template-columns: 1fr; }
-  .kpi { grid-column: span 1; }
-  .why-list { grid-template-columns: 1fr; }
+  .benefit-grid { grid-template-columns: repeat(2, 1fr); }
+  .usecase-grid { grid-template-columns: repeat(2, 1fr); }
+  .feature-cards { grid-template-columns: repeat(2, 1fr); }
   .release-grid { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; gap: 2rem; }
 }
 
 @media (max-width: 560px) {
   .wrap { padding: 0 20px; }
+  .benefit-grid { grid-template-columns: 1fr; }
+  .usecase-grid { grid-template-columns: 1fr; }
+  .feature-cards { grid-template-columns: 1fr; }
   .imprint-cols { grid-template-columns: 1fr; gap: 1.6rem; }
+  .kpi-banner { flex-direction: column; align-items: flex-start; }
+  .kpi-banner .kpi-bars { width: 100%; }
   .hero-cta { flex-direction: column; align-items: stretch; width: 100%; max-width: 320px; }
 }
 

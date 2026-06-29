@@ -30,18 +30,21 @@
     if (!valEl || !unitEl || !labelEl) return;
 
     const METRICS = [
-      { value: 150,  unit: '+',      label: 'devices deployed in the field' },
-      { value: 30,   unit: '%',      label: 'less unplanned downtime, documented' },
-      { value: 50,   unit: 'ms',     label: 'sampling resolution at the edge' },
-      { value: 5000, unit: 'vars/s', label: 'variables captured per second' },
+      { value: 150,  unit: '+',      key: 'kpi.m1', label: 'devices deployed in the field' },
+      { value: 30,   unit: '%',      key: 'kpi.m2', label: 'less unplanned downtime, documented' },
+      { value: 50,   unit: 'ms',     key: 'kpi.m3', label: 'sampling resolution at the edge' },
+      { value: 5000, unit: 'vars/s', key: 'kpi.m4', label: 'variables captured per second' },
     ];
-    let i = 0;
     const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    // Pick the label in the active language (German from window.INVISYNE_DE, else English).
+    const labelFor = (m) => (window.INVISYNE_LANG === 'de' && window.INVISYNE_DE && window.INVISYNE_DE[m.key]) || m.label;
 
+    let next = 0, shown = 0;
     function rotate() {
-      const m = METRICS[i];
+      shown = next;
+      const m = METRICS[shown];
       unitEl.textContent = m.unit;
-      labelEl.textContent = m.label;
+      labelEl.textContent = labelFor(m);
       if (reduceMotion) {
         valEl.textContent = m.value.toLocaleString();
       } else {
@@ -53,10 +56,12 @@
           if (t < 1) requestAnimationFrame(frame);
         })(start);
       }
-      i = (i + 1) % METRICS.length;
+      next = (next + 1) % METRICS.length;
     }
     rotate();
     if (!reduceMotion) setInterval(rotate, 3600);
+    // Re-render the current label when the language is toggled.
+    document.addEventListener('i18n:change', () => { labelEl.textContent = labelFor(METRICS[shown]); });
   })();
 
 })();
