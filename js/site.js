@@ -1,5 +1,5 @@
 // Site interactions for the one-page site. Pure vanilla JS, no dependencies.
-// The hero canvas lives in scene.js; this file drives the content sections.
+// The hero canvas is driven by js/cinema/scene-webgl.js; this file drives the content sections.
 
 (() => {
   'use strict';
