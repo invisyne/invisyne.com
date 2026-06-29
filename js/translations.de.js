@@ -125,12 +125,12 @@ window.INVISYNE_DE = {
   "latest.kicker": "Neuigkeiten",
   "latest.head": "Die Plattform entwickelt sich kontinuierlich weiter.",
   "latest.lede": "Crawler, Hub und Companion werden laufend erweitert. Die neuesten Funktionen finden Sie hier — mit vollständiger Historie im jeweiligen Changelog.",
-  "rel.edge.1": "Runs — vollständiger CSV-Export von Run-Daten, Run-Konfiguration in der Oberfläche, manuelle Gateway-Wiederverbindung.",
-  "rel.edge.2": "OPC-UA-Konnektor mit gesicherten Verbindungen und Variablen-Explorer.",
-  "rel.hub.1": "Überarbeiteter Softwarebereich mit Detailseiten pro Version sowie Account-Anfrage-Link auf der Login-Seite.",
-  "rel.hub.2": "Versionsbezogene Veröffentlichungsdaten und Fehlerkorrekturen im Softwarebereich.",
-  "rel.comp.1": "Run-Datenexport — Messdaten für definierte Zeiträume als CSV herunterladen.",
-  "rel.comp.2": "Erste Veröffentlichung — automatische Erkennung von Edge-Geräten im lokalen Netzwerk.",
+  "rel.edge.1": "HTTPS-Absicherung aller Systemdienste — eigene Zertifikate und HTTP-Fallback-Modus.",
+  "rel.edge.2": "Runs — vollständiger CSV-Export von Run-Daten, Run-Konfiguration in der Oberfläche, manuelle Gateway-Wiederverbindung.",
+  "rel.hub.1": "Einheitliche Darstellung leerer Felder und ein Anzahl-Badge in der Geräteliste.",
+  "rel.hub.2": "Neues Invisyne Design System, systemweites Changelog und Light-/Dark-Mode.",
+  "rel.comp.1": "Kompatibilität mit Edge 2.22 — Geräte-Passwort-Authentifizierung für Konfigurationsänderungen.",
+  "rel.comp.2": "Optionaler Hub-Login für Deepview sowie Hochladen von Runs in Deepview-Workspaces.",
   "rel.link": "Changelog anzeigen ↗",
 
   /* — Final CTA — */
