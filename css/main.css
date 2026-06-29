@@ -736,6 +736,53 @@ a { color: inherit; }
 }
 
 /* ===========================================
+   CINEMA — glass, reveals, fallback
+   =========================================== */
+
+/* Light frosted glass for existing content panels. */
+.tile, .feature-card {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(14px) saturate(1.1);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 18px 40px -24px rgba(37, 73, 255, 0.22);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tile, .feature-card { background: var(--tile-bg); }
+}
+
+/* Reveal base states apply ONLY when motion is enabled (.cinema-on on body).
+   Without JS / with reduced-motion, content is visible immediately. */
+.cinema-on [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  will-change: opacity, transform;
+}
+.cinema-on [data-reveal-line] {
+  opacity: 0;
+  transform: translateY(0.6em);
+  display: inline-block;
+}
+
+/* No-WebGL fallback: a calm brand gradient on the fixed canvas slot. */
+.cin-fallback {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(60% 50% at 50% 30%, rgba(37,73,255,0.10), transparent 70%),
+    radial-gradient(50% 50% at 80% 80%, rgba(191,77,243,0.08), transparent 70%),
+    var(--bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinema-on [data-reveal],
+  .cinema-on [data-reveal-line] { opacity: 1; transform: none; }
+}
+
+/* ===========================================
    RESPONSIVE
    =========================================== */
 @media (max-width: 900px) {
