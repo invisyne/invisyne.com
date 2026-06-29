@@ -739,8 +739,10 @@ a { color: inherit; }
    CINEMA — glass, reveals, fallback
    =========================================== */
 
-/* Light frosted glass for existing content panels. */
-.tile, .feature-card {
+/* Light frosted glass for existing content panels.
+   Exclude the KPI banner (.kpi) — it keeps its solid brand-blue fill so the
+   white metric numbers stay legible. */
+.tile:not(.kpi), .feature-card {
   background: rgba(255, 255, 255, 0.62);
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
@@ -750,7 +752,7 @@ a { color: inherit; }
     0 18px 40px -24px rgba(37, 73, 255, 0.22);
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tile, .feature-card { background: var(--tile-bg); }
+  .tile:not(.kpi), .feature-card { background: var(--tile-bg); }
 }
 
 /* Reveal base states apply ONLY when motion is enabled (.cinema-on on body).
