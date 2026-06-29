@@ -97,23 +97,23 @@ const chart = {
 // morphs between consecutive views. "Context" is the IP-safe lens (no method
 // disclosed). Inspired by data-viz studios that morph one dataset across views.
 const VIEWS = [
-  { key: 'Signals',     lines: 1.0,  alarms: 0.18, forecast: 0, context: 0, life: 0.45, dash: 0 },
-  { key: 'Alarms',      lines: 0.55, alarms: 1.0,  forecast: 0, context: 0, life: 0.35, dash: 0 },
-  { key: 'Predictions', lines: 0.7,  alarms: 0.12, forecast: 1, context: 0, life: 0.35, dash: 0 },
-  { key: 'Lifecycle',   lines: 0.6,  alarms: 0.2,  forecast: 0, context: 0, life: 1.0,  dash: 0 },
-  { key: 'Context',     lines: 0.5,  alarms: 0.1,  forecast: 0, context: 1, life: 0.55, dash: 0 },
-  { key: 'Dashboards',  lines: 0.4,  alarms: 0.1,  forecast: 0, context: 0, life: 0.3,  dash: 1 },
+  { key: 'Signals',     lines: 1.0,  alarms: 0.18, forecast: 0, context: 0, life: 0.45, dash: 0, phases: 0 },
+  { key: 'Alarms',      lines: 0.55, alarms: 1.0,  forecast: 0, context: 0, life: 0.35, dash: 0, phases: 0 },
+  { key: 'Predictions', lines: 0.7,  alarms: 0.12, forecast: 1, context: 0, life: 0.35, dash: 0, phases: 0 },
+  { key: 'Lifecycle',   lines: 0.55, alarms: 0.2,  forecast: 0, context: 0, life: 1.0,  dash: 0, phases: 1 },
+  { key: 'Context',     lines: 0.5,  alarms: 0.1,  forecast: 0, context: 1, life: 0.55, dash: 0, phases: 0 },
+  { key: 'Dashboards',  lines: 0.4,  alarms: 0.1,  forecast: 0, context: 0, life: 0.3,  dash: 1, phases: 0 },
 ];
 const VIEW_DWELL = 4.2; // s a view holds after morphing in
 const VIEW_MORPH = 1.0; // s to morph between views
 const vstate = { cur: 0, prev: 0, since: 0 };
 const easeInOut = (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
-const KEYS = ['lines', 'alarms', 'forecast', 'context', 'life', 'dash'];
+const KEYS = ['lines', 'alarms', 'forecast', 'context', 'life', 'dash', 'phases'];
 
 function viewAlphas(dt) {
   if (REDUCE) {
     const v = VIEWS[0];
-    return { lines: v.lines, alarms: v.alarms, forecast: 0, context: 0, life: v.life, dash: 0,
+    return { lines: v.lines, alarms: v.alarms, forecast: 0, context: 0, life: v.life, dash: 0, phases: 0,
              label: v.key, prevLabel: v.key, blend: 1 };
   }
   vstate.since += dt;
@@ -390,6 +390,64 @@ function drawLifecycle(cx, cy, cw, ch, t) {
   ctx.textAlign = 'left';
 }
 
+// Lifecycle view — the dynamic layer: phase dividers across the chart plus a
+// progress front that travels Commissioning → End-of-life, with a trailing
+// "current phase" column and a glowing head riding the baseline.
+function drawLifecyclePhases(cx, cy, cw, ch, t) {
+  const x0 = cx + cw * 0.12, x1 = cx + cw * 0.88, span = x1 - x0;
+  const n = PHASES.length;
+
+  for (let i = 0; i < n; i++) {
+    const x = x0 + span * (i / (n - 1));
+    const cf = centerFactor(x, cy + ch / 2);
+    if (cf <= 0.02) continue;
+    ctx.strokeStyle = `rgba(${C_GREY}, ${0.12 * cf})`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 5]);
+    ctx.beginPath();
+    ctx.moveTo(x, cy);
+    ctx.lineTo(x, cy + ch);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Progress front travelling through the lifecycle (loops).
+  const cyc = 13;
+  const prog = (t % cyc) / cyc;
+  const px = x0 + span * prog;
+  const segW = span / (n - 1);
+  const cfP = centerFactor(px, cy + ch / 2);
+
+  // Trailing "current phase" column.
+  const colX = px - segW * 0.5;
+  const grad = ctx.createLinearGradient(colX, 0, colX + segW, 0);
+  grad.addColorStop(0, `rgba(${C_PRIMARY}, 0)`);
+  grad.addColorStop(0.5, `rgba(${C_PRIMARY}, ${0.1 * cfP})`);
+  grad.addColorStop(1, `rgba(${C_PRIMARY}, 0)`);
+  ctx.fillStyle = grad;
+  ctx.fillRect(colX, cy, segW, ch);
+
+  // Progress line + glowing head on the baseline.
+  ctx.strokeStyle = `rgba(${C_PRIMARY}, ${0.5 * cfP})`;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(px, cy);
+  ctx.lineTo(px, cy + ch);
+  ctx.stroke();
+  const hy = cy + ch;
+  const g = ctx.createRadialGradient(px, hy, 0, px, hy, 13);
+  g.addColorStop(0, `rgba(${C_PRIMARY}, ${0.85 * cfP})`);
+  g.addColorStop(1, `rgba(${C_PRIMARY}, 0)`);
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(px, hy, 13, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(px, hy, 3, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(${C_PRIMARY}, ${cfP})`;
+  ctx.fill();
+}
+
 function drawChart(dt, t) {
   const cw = W, ch = H * 0.46;
   const cx = (W - cw) / 2, cy = (H - ch) / 2 + H * 0.16;
@@ -514,6 +572,14 @@ function drawChart(dt, t) {
   ctx.globalAlpha = A.life;
   drawLifecycle(cx, cy, cw, ch, t);
   ctx.restore();
+
+  // Lifecycle view — dynamic phase progression across the chart.
+  if (A.phases > 0.01) {
+    ctx.save();
+    ctx.globalAlpha = A.phases;
+    drawLifecyclePhases(cx, cy, cw, ch, t);
+    ctx.restore();
+  }
 
   drawViewCaption(cx, cy, cw, A);
 }
