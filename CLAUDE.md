@@ -8,8 +8,8 @@ This is a **public repository**. Do not commit anything that is not intended for
 
 ## Stack
 
-- Pure HTML/CSS/JS — no build step, no framework, no dependencies
-- Background animation is a hand-rolled 2D-canvas node network plus a centered multi-line chart in `js/scene.js`
+- HTML/CSS/JS with **no build step**. Libraries are vendored (not bundled) under `js/vendor/`: GSAP + ScrollTrigger, Three.js, Lenis. No CDN at runtime.
+- Background is a procedural Three.js "cinematic spine" (`js/cinema/`) driven by scroll via Lenis + ScrollTrigger; reveals via GSAP. Falls back to a static brand gradient under `prefers-reduced-motion` or when WebGL is unavailable. The retired 2D canvas lives in git history (`js/scene.js`).
 - GT America Extended font, self-hosted as woff2 in `assets/fonts/`
 - Brand tokens defined as CSS custom properties in `css/main.css`
 
