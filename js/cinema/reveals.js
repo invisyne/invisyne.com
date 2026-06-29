@@ -20,7 +20,7 @@ function buildSplitHeadlines() {
 
     const tween = gsap.to(el.querySelectorAll('[data-reveal-line]'), {
       opacity: 1, y: 0, duration: TIMING.base, ease: EASE.power, stagger: TIMING.stagger,
-      scrollTrigger: { trigger: el, start: 'top 80%' },
+      scrollTrigger: { trigger: el, start: 'top 92%' },
     });
     // gsap.to returns a tween; its scrollTrigger property holds the ST instance.
     if (tween.scrollTrigger) splitTriggers.push(tween.scrollTrigger);
@@ -37,7 +37,7 @@ export function initReveals() {
     if (el.closest(GRID_SEL)) return;
     gsap.to(el, {
       opacity: 1, y: 0, duration: TIMING.base, ease: EASE.power,
-      scrollTrigger: { trigger: el, start: 'top 85%' },
+      scrollTrigger: { trigger: el, start: 'top 94%' },
     });
   });
 
@@ -45,7 +45,7 @@ export function initReveals() {
   document.querySelectorAll(GRID_SEL).forEach((grid) => {
     gsap.to(grid.querySelectorAll(':scope > [data-reveal]'), {
       opacity: 1, y: 0, duration: TIMING.base, ease: EASE.power, stagger: TIMING.stagger,
-      scrollTrigger: { trigger: grid, start: 'top 82%' },
+      scrollTrigger: { trigger: grid, start: 'top 90%' },
     });
   });
 

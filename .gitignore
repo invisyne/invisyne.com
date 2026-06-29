@@ -4,3 +4,10 @@ node_modules/
 
 # Internal design specs — not for the public web (see CLAUDE.md)
 docs/superpowers/
+
+# Internal/IP-sensitive working material — never publish (public repo)
+js/V1/
+js/V5/
+
+# Editor workspace
+.obsidian/

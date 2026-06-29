@@ -757,12 +757,12 @@ a { color: inherit; }
    Without JS / with reduced-motion, content is visible immediately. */
 .cinema-on [data-reveal] {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(14px);
   will-change: opacity, transform;
 }
 .cinema-on [data-reveal-line] {
   opacity: 0;
-  transform: translateY(0.6em);
+  transform: translateY(0.4em);
   display: inline-block;
 }
 

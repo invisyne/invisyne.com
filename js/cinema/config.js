@@ -1,11 +1,12 @@
 // Central animation + color config. Brand tokens stay the source of truth:
 // colors are read from CSS custom properties, never hard-coded here.
 
-export const TIMING = { fast: 0.6, base: 0.9, slow: 1.2, stagger: 0.08 };
+// Fast, seamless motion: short durations, tight stagger, crisp ease.
+export const TIMING = { fast: 0.28, base: 0.42, slow: 0.6, stagger: 0.035 };
 
 export const EASE = {
   cinematic: 'cubic-bezier(0.16,1,0.3,1)',
-  power: 'power3.out',
+  power: 'power2.out',
   in: 'power2.in',
 };
 

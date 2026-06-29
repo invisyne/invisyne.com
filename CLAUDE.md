@@ -8,8 +8,9 @@ This is a **public repository**. Do not commit anything that is not intended for
 
 ## Stack
 
-- HTML/CSS/JS with **no build step**. Libraries are vendored (not bundled) under `js/vendor/`: GSAP + ScrollTrigger, Three.js, Lenis. No CDN at runtime.
-- Background is a procedural Three.js "cinematic spine" (`js/cinema/`) driven by scroll via Lenis + ScrollTrigger; reveals via GSAP. Falls back to a static brand gradient under `prefers-reduced-motion` or when WebGL is unavailable. The retired 2D canvas lives in git history (`js/scene.js`).
+- HTML/CSS/JS with **no build step**. Libraries are vendored (not bundled) under `js/vendor/`: GSAP + ScrollTrigger, Lenis. No CDN at runtime.
+- Background is a hand-rolled 2D-canvas animation (`js/scene.js`): a drifting node network plus a centered multi-line signal chart with threshold "incident" markers and an abstract asset-lifecycle ribbon. It self-handles `prefers-reduced-motion` (static frame).
+- Motion layer (`js/cinema/`): GSAP/ScrollTrigger scroll-reveals (staggered headlines, glass float-in) plus Lenis snappy smooth-scroll, gated behind `prefers-reduced-motion`. Brand tokens read from CSS in `js/cinema/config.js`.
 - GT America Extended font, self-hosted as woff2 in `assets/fonts/`
 - Brand tokens defined as CSS custom properties in `css/main.css`
 
