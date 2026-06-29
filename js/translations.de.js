@@ -23,7 +23,7 @@ window.INVISYNE_DE = {
 
   /* — Ihr Nutzen (Benefits) — */
   "gain.kicker": "Ihr Nutzen",
-  "gain.head": "Industrial Intelligence wird greifbar, wenn sie konkrete Probleme im Betrieb löst.",
+  "gain.head": "Schaffen Sie Mehrwert, indem Sie reale operative Probleme mit Industrial Intelligence lösen.",
   "ben.commissioning.h": "Inbetriebnahme beschleunigen",
   "ben.commissioning.p": "Schaffen Sie ab Tag eins eine belastbare Baseline für Maschine, Anlage oder Asset. Abweichungen werden früher sichtbar, Trial-and-Error wird reduziert und der Weg in den stabilen Betrieb wird kürzer.",
   "ben.downtime.h": "Ursachen schneller finden",
@@ -111,15 +111,15 @@ window.INVISYNE_DE = {
   "f.a.tag": "A · Memory",
   "f.a.h": "Kontinuierliches Maschinengedächtnis",
   "f.a.body": "Signale, Zustände und Ereignisse werden kontinuierlich erfasst — nicht nur in engen Zeitfenstern während Ramp-Up, Validierung oder Audits.",
-  "f.b.tag": "B · Intelligence",
-  "f.b.h": "Machine Intelligence",
-  "f.b.body": "Muster, Abweichungen und Verhalten über Zeit werden verständlich. Wissen entsteht im System — nicht nur in den Köpfen einzelner Experten.",
-  "f.c.tag": "C · Operations",
-  "f.c.h": "Operational Intelligence",
-  "f.c.body": "Verständnis wird im Betrieb angewendet: Entscheidungen werden schneller, Wartung wird gezielter, Service wird skalierbarer und Ausfälle werden vermeidbarer.",
-  "f.d.tag": "D · Use Cases",
-  "f.d.h": "Industrial Intelligence im Einsatz",
-  "f.d.body": "Greifbar in konkreten Use Cases: Diagnostics & Root-Cause, Prevent Downtime, Knowledge Retention, Comparison & Optimisation, New Business Models, Automated Decisions und Compliance.",
+  "f.b.tag": "B · Einfachheit",
+  "f.b.h": "Außergewöhnlich benutzerfreundlich",
+  "f.b.body": "Komplexe Technik, einfach gemacht. Intuitive Oberflächen — kein Handbuch nötig. Mehr Überblick, weniger Klicks, null Frust.",
+  "f.c.tag": "C · Preise",
+  "f.c.h": "Flexible Preise",
+  "f.c.body": "Einzelgerät, Abo oder Großprojekt — die Preisgestaltung passt sich Ihnen an. Nur was Sie brauchen, so lange Sie es brauchen. Fair und transparent.",
+  "f.d.tag": "D · Aus einer Hand",
+  "f.d.h": "Alles aus einer Hand",
+  "f.d.body": "Von Signalen zu Aktionen — alles aus einer Quelle. Keine Schnittstellen-Odyssee, kein Partner-Hopping: einschalten, einrichten, loslegen.",
 
   /* — Neuigkeiten — */
   "latest.kicker": "Neuigkeiten",
