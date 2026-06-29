@@ -92,6 +92,111 @@ const chart = {
   spd: [6.5, 7.5, 5.5],
 };
 
+// — View cycling — the same logged signals seen through different operational
+// lenses. Each view sets the emphasis (alpha) of the layers; the renderer
+// morphs between consecutive views. "Context" is the IP-safe lens (no method
+// disclosed). Inspired by data-viz studios that morph one dataset across views.
+const VIEWS = [
+  { key: 'Signals',     lines: 1.0,  alarms: 0.18, forecast: 0, context: 0, life: 0.45 },
+  { key: 'Alarms',      lines: 0.55, alarms: 1.0,  forecast: 0, context: 0, life: 0.35 },
+  { key: 'Predictions', lines: 0.7,  alarms: 0.12, forecast: 1, context: 0, life: 0.35 },
+  { key: 'Lifecycle',   lines: 0.6,  alarms: 0.2,  forecast: 0, context: 0, life: 1.0 },
+  { key: 'Context',     lines: 0.5,  alarms: 0.1,  forecast: 0, context: 1, life: 0.55 },
+];
+const VIEW_DWELL = 4.2; // s a view holds after morphing in
+const VIEW_MORPH = 1.0; // s to morph between views
+const vstate = { cur: 0, prev: 0, since: 0 };
+const easeInOut = (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
+const KEYS = ['lines', 'alarms', 'forecast', 'context', 'life'];
+
+function viewAlphas(dt) {
+  if (REDUCE) {
+    const v = VIEWS[0];
+    return { lines: v.lines, alarms: v.alarms, forecast: 0, context: 0, life: v.life,
+             label: v.key, prevLabel: v.key, blend: 1 };
+  }
+  vstate.since += dt;
+  if (vstate.since >= VIEW_DWELL + VIEW_MORPH) {
+    vstate.prev = vstate.cur;
+    vstate.cur = (vstate.cur + 1) % VIEWS.length;
+    vstate.since = 0;
+  }
+  const blend = vstate.since <= VIEW_MORPH ? easeInOut(vstate.since / VIEW_MORPH) : 1;
+  const A = VIEWS[vstate.prev], B = VIEWS[vstate.cur], out = {};
+  KEYS.forEach((k) => { out[k] = A[k] + (B[k] - A[k]) * blend; });
+  out.label = B.key; out.prevLabel = A.key; out.blend = blend;
+  return out;
+}
+
+// Caption naming the active view (crosses cleanly through the midpoint).
+function drawViewCaption(cx, cy, cw, A) {
+  const x = cx + cw * 0.12, y = cy - 10;
+  const cf = centerFactor(x, y);
+  if (cf <= 0.02) return;
+  ctx.font = '500 11px "GT America Extended", sans-serif';
+  ctx.letterSpacing = '2px';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = `rgba(${C_GREY}, ${0.5 * cf})`;
+  ctx.fillText('VIEW', x, y);
+  const px = x + ctx.measureText('VIEW').width + 12;
+  const showPrev = A.blend < 0.5;
+  const lbl = (showPrev ? A.prevLabel : A.label).toUpperCase();
+  const la = showPrev ? 1 - A.blend * 2 : A.blend * 2 - 1;
+  ctx.fillStyle = `rgba(${C_PRIMARY}, ${Math.max(0, la) * cf})`;
+  ctx.fillText(lbl, px, y);
+  ctx.letterSpacing = '0px';
+}
+
+// Predictions lens — a "now" boundary with dashed projections + confidence fans.
+function drawForecast(cx, cy, cw, ch, fc) {
+  const nx = cx + cw * 0.72, xr = cx + cw;
+  ctx.fillStyle = `rgba(${C_PRIMARY}, 0.05)`;
+  ctx.fillRect(nx, cy, xr - nx, ch);
+  ctx.strokeStyle = `rgba(${C_GREY}, 0.45)`;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(nx, cy); ctx.lineTo(nx, cy + ch); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font = '400 9px "GT America Extended", sans-serif';
+  ctx.letterSpacing = '1.5px';
+  ctx.fillStyle = `rgba(${C_GREY}, 0.8)`;
+  ctx.fillText('NOW', nx + 6, cy + 12);
+  ctx.fillStyle = `rgba(${C_PRIMARY}, 0.8)`;
+  ctx.fillText('FORECAST', nx + 6, cy + ch - 8);
+  ctx.letterSpacing = '0px';
+  const spread = (xr - nx) * 0.16;
+  for (const s of fc) {
+    const yEnd = clamp(s.y + s.slope * (xr - nx), cy, cy + ch);
+    ctx.fillStyle = `rgba(${s.col}, 0.10)`;
+    ctx.beginPath();
+    ctx.moveTo(nx, s.y);
+    ctx.lineTo(xr, yEnd - spread);
+    ctx.lineTo(xr, yEnd + spread);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = `rgba(${s.col}, 0.85)`;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath(); ctx.moveTo(nx, s.y); ctx.lineTo(xr, yEnd); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+// Context lens — translucent stacked areas under each series, reading as
+// aggregated operational context (illustrative only; discloses nothing).
+function drawContext(cx, cy, cw, ch, seriesPts) {
+  for (const sp of seriesPts) {
+    const pts = sp.pts;
+    ctx.beginPath();
+    ctx.moveTo(cx + pts[0].x, cy + ch);
+    for (const p of pts) ctx.lineTo(cx + p.x, cy + ch - p.val * ch);
+    ctx.lineTo(cx + pts[pts.length - 1].x, cy + ch);
+    ctx.closePath();
+    ctx.fillStyle = `rgba(${sp.col}, 0.07)`;
+    ctx.fill();
+  }
+}
+
 // One marker per contiguous out-of-band run, placed at the run's extremum.
 function collectRuns(pts, cx, cy, ch, type, out) {
   const inBand = type === 'hi' ? (v) => v >= THRESHOLD_HI : (v) => v <= THRESHOLD_LO;
@@ -195,6 +300,9 @@ function drawChart(dt, t) {
   const cw = W, ch = H * 0.46;
   const cx = (W - cw) / 2, cy = (H - ch) / 2 + H * 0.16;
 
+  const A = viewAlphas(dt);
+
+  // Baseline grid (always faint).
   ctx.strokeStyle = `rgba(${C_PRIMARY}, 0.05)`;
   ctx.lineWidth = 1;
   for (let i = 1; i < 4; i++) {
@@ -205,7 +313,9 @@ function drawChart(dt, t) {
     ctx.stroke();
   }
 
-  // Alert bands — going above the upper line or below the lower triggers a marker.
+  // Threshold bands — emphasised in the Alarms view.
+  ctx.save();
+  ctx.globalAlpha = 0.45 + 0.55 * A.alarms;
   const tyHi = cy + ch - THRESHOLD_HI * ch;
   const tyLo = cy + ch - THRESHOLD_LO * ch;
   ctx.strokeStyle = `rgba(${C_ALERT}, 0.3)`;
@@ -218,8 +328,11 @@ function drawChart(dt, t) {
     ctx.stroke();
   }
   ctx.setLineDash([]);
+  ctx.restore();
 
-  const alerts = [];
+  // Advance + draw the signal lines (emphasis = A.lines). Capture geometry for
+  // the Context (stacked areas) and Predictions (projection) views.
+  const alerts = [], seriesPts = [], fc = [], fx = cw * 0.72;
   for (let i = 0; i < chart.s.length; i++) {
     chart.p[i] += dt * chart.spd[i];
     while (chart.p[i] >= 1) {
@@ -229,6 +342,10 @@ function drawChart(dt, t) {
     }
     const pts = scrollPoints(chart.s[i], chart.p[i], cw);
     if (pts.length < 2) continue;
+    seriesPts.push({ col: CHART_COLS[i], pts });
+
+    ctx.save();
+    ctx.globalAlpha = A.lines;
     ctx.beginPath();
     for (let k = 0; k < pts.length; k++) {
       const x = cx + pts[k].x, y = cy + ch - pts[k].val * ch;
@@ -239,17 +356,44 @@ function drawChart(dt, t) {
     ctx.lineJoin = 'round';
     ctx.stroke();
     const last = pts[pts.length - 1];
-    const lx = cx + last.x, ly = cy + ch - last.val * ch;
     ctx.beginPath();
-    ctx.arc(lx, ly, 3, 0, Math.PI * 2);
+    ctx.arc(cx + last.x, cy + ch - last.val * ch, 3, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(${CHART_COLS[i]}, 1)`;
     ctx.fill();
+    ctx.restore();
+
+    // Sample value + slope at the forecast boundary for the Predictions view.
+    for (let k = 1; k < pts.length; k++) {
+      if (pts[k - 1].x <= fx && pts[k].x >= fx) {
+        const tt = (fx - pts[k - 1].x) / (pts[k].x - pts[k - 1].x);
+        const v = pts[k - 1].val + (pts[k].val - pts[k - 1].val) * tt;
+        const slopeVal = (pts[k].val - pts[k - 1].val) / (pts[k].x - pts[k - 1].x);
+        fc.push({ col: CHART_COLS[i], y: cy + ch - v * ch, slope: -slopeVal * ch });
+        break;
+      }
+    }
 
     collectRuns(pts, cx, cy, ch, 'hi', alerts);
     collectRuns(pts, cx, cy, ch, 'lo', alerts);
   }
 
-  // Thin out markers: keep a horizontally spaced subset, capped.
+  // Context view — stacked translucent aggregation areas.
+  if (A.context > 0.01) {
+    ctx.save();
+    ctx.globalAlpha = A.context;
+    drawContext(cx, cy, cw, ch, seriesPts);
+    ctx.restore();
+  }
+
+  // Predictions view — projection + confidence fans.
+  if (A.forecast > 0.01 && fc.length) {
+    ctx.save();
+    ctx.globalAlpha = A.forecast;
+    drawForecast(cx, cy, cw, ch, fc);
+    ctx.restore();
+  }
+
+  // Alarms — incident markers (emphasis = A.alarms; keep faintly present always).
   alerts.sort((a, b) => a.x - b.x);
   const shown = [];
   for (const a of alerts) {
@@ -257,11 +401,19 @@ function drawChart(dt, t) {
     shown.push(a);
     if (shown.length >= MAX_ALERTS) break;
   }
-
+  ctx.save();
+  ctx.globalAlpha = Math.max(0.12, A.alarms);
   const alertPulse = 0.7 + Math.sin(t * 6) * 0.3;
   for (const a of shown) drawAlert(a, alertPulse);
+  ctx.restore();
 
+  // Lifecycle ribbon (emphasis = A.life).
+  ctx.save();
+  ctx.globalAlpha = A.life;
   drawLifecycle(cx, cy, cw, ch, t);
+  ctx.restore();
+
+  drawViewCaption(cx, cy, cw, A);
 }
 
 function newSignal(initial) {
