@@ -106,11 +106,11 @@ window.INVISYNE_DE = {
 
   /* — Warum Invisyne (HTML-Tag <span class='accent'>…</span> erhalten) — */
   "why.kicker": "Warum Invisyne",
-  "why.head": "Gateways verbinden. IIoT visualisiert. SCADA überwacht. <span class='accent'>Invisyne schafft Industrial Intelligence.</span>",
-  "why.lede": "Der Unterschied liegt nicht in mehr Daten. Der Unterschied liegt darin, Betriebsdaten, Historie und relevante Zusammenhänge so nutzbar zu machen, dass Teams Verhalten verstehen und bessere Entscheidungen treffen.",
-  "f.a.tag": "A · Memory",
-  "f.a.h": "Kontinuierliches Maschinengedächtnis",
-  "f.a.body": "Signale, Zustände und Ereignisse werden kontinuierlich erfasst — nicht nur in engen Zeitfenstern während Ramp-Up, Validierung oder Audits.",
+  "why.head": "Gateways verbinden. IIoT visualisiert. SCADA überwacht. <span class='accent'>Invisyne macht aus Daten Bedeutung.</span>",
+  "why.lede": "Mehr Daten waren nie das Problem. Invisyne macht aus Betriebsdaten ein Verständnis, auf das Teams handeln können — einfach in der Anwendung, flexibel im Preis und durchgängig aus einer Hand.",
+  "f.a.tag": "A · Intelligenz",
+  "f.a.h": "Aus Daten wird Bedeutung",
+  "f.a.body": "Invisyne erfasst kontinuierlich Maschinen- und Anlagendaten und macht daraus ein klares, nutzbares Verständnis des Anlagenverhaltens — die Grundlage für schnellere und bessere Entscheidungen über den gesamten Lebenszyklus.",
   "f.b.tag": "B · Einfachheit",
   "f.b.h": "Intuitiv in der Bedienung",
   "f.b.body": "Intuitive Oberflächen halten die Einarbeitung gering und entlasten das Bedienpersonal — mit klaren Übersichten und kurzen Wegen zu den relevanten Informationen.",
