@@ -97,22 +97,23 @@ const chart = {
 // morphs between consecutive views. "Context" is the IP-safe lens (no method
 // disclosed). Inspired by data-viz studios that morph one dataset across views.
 const VIEWS = [
-  { key: 'Signals',     lines: 1.0,  alarms: 0.18, forecast: 0, context: 0, life: 0.45 },
-  { key: 'Alarms',      lines: 0.55, alarms: 1.0,  forecast: 0, context: 0, life: 0.35 },
-  { key: 'Predictions', lines: 0.7,  alarms: 0.12, forecast: 1, context: 0, life: 0.35 },
-  { key: 'Lifecycle',   lines: 0.6,  alarms: 0.2,  forecast: 0, context: 0, life: 1.0 },
-  { key: 'Context',     lines: 0.5,  alarms: 0.1,  forecast: 0, context: 1, life: 0.55 },
+  { key: 'Signals',     lines: 1.0,  alarms: 0.18, forecast: 0, context: 0, life: 0.45, dash: 0 },
+  { key: 'Alarms',      lines: 0.55, alarms: 1.0,  forecast: 0, context: 0, life: 0.35, dash: 0 },
+  { key: 'Predictions', lines: 0.7,  alarms: 0.12, forecast: 1, context: 0, life: 0.35, dash: 0 },
+  { key: 'Lifecycle',   lines: 0.6,  alarms: 0.2,  forecast: 0, context: 0, life: 1.0,  dash: 0 },
+  { key: 'Context',     lines: 0.5,  alarms: 0.1,  forecast: 0, context: 1, life: 0.55, dash: 0 },
+  { key: 'Dashboards',  lines: 0.4,  alarms: 0.1,  forecast: 0, context: 0, life: 0.3,  dash: 1 },
 ];
 const VIEW_DWELL = 4.2; // s a view holds after morphing in
 const VIEW_MORPH = 1.0; // s to morph between views
 const vstate = { cur: 0, prev: 0, since: 0 };
 const easeInOut = (x) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
-const KEYS = ['lines', 'alarms', 'forecast', 'context', 'life'];
+const KEYS = ['lines', 'alarms', 'forecast', 'context', 'life', 'dash'];
 
 function viewAlphas(dt) {
   if (REDUCE) {
     const v = VIEWS[0];
-    return { lines: v.lines, alarms: v.alarms, forecast: 0, context: 0, life: v.life,
+    return { lines: v.lines, alarms: v.alarms, forecast: 0, context: 0, life: v.life, dash: 0,
              label: v.key, prevLabel: v.key, blend: 1 };
   }
   vstate.since += dt;
@@ -180,6 +181,99 @@ function drawForecast(cx, cy, cw, ch, fc) {
     ctx.beginPath(); ctx.moveTo(nx, s.y); ctx.lineTo(xr, yEnd); ctx.stroke();
     ctx.setLineDash([]);
   }
+}
+
+// Dashboards lens — small widget cards "generated" from the live signals:
+// a radial gauge, a KPI number, a sparkline. Animated connectors stream from
+// the waveform into each card. Placed in the lower band, faded near the calm
+// center so the hero text stays clean. Generic metrics only.
+const DASH_LABELS = ['INDEX', 'UPTIME', 'TREND'];
+function drawDashboards(cx, cy, cw, ch, t, seriesPts) {
+  if (seriesPts.length < 3) return;
+  const cardW = 158, cardH = 88, cardY = H * 0.72, baseY = cy + ch;
+  [0.2, 0.5, 0.8].forEach((fx, idx) => {
+    const cxC = cx + cw * fx, x = cxC - cardW / 2, y = cardY;
+    const a = centerFactor(cxC, y + cardH / 2);
+    if (a <= 0.04) return;
+    const val = seriesPts[idx].pts[seriesPts[idx].pts.length - 1].val; // 0..1
+
+    // Connector: data streaming from the waveform up into the card.
+    ctx.strokeStyle = `rgba(${C_PRIMARY}, ${0.22 * a})`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 6]);
+    ctx.lineDashOffset = -t * 26;
+    ctx.beginPath();
+    ctx.moveTo(cxC, baseY);
+    ctx.lineTo(cxC, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
+
+    // Card frame (light glass).
+    ctx.beginPath();
+    ctx.roundRect(x, y, cardW, cardH, 12);
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.55 * a})`;
+    ctx.fill();
+    ctx.strokeStyle = `rgba(${C_PRIMARY}, ${0.18 * a})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.font = '400 8px "GT America Extended", sans-serif';
+    ctx.letterSpacing = '1.5px';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = `rgba(${C_GREY}, ${0.7 * a})`;
+    ctx.fillText(DASH_LABELS[idx], x + 12, y + 11);
+    ctx.letterSpacing = '0px';
+
+    if (idx === 0) {
+      // Radial gauge.
+      const gx = x + cardW / 2, gy = y + cardH * 0.62, r = 23;
+      const a0 = Math.PI * 0.8, a1 = Math.PI * 2.2;
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = `rgba(${C_GREY}, ${0.22 * a})`;
+      ctx.beginPath(); ctx.arc(gx, gy, r, a0, a1); ctx.stroke();
+      ctx.strokeStyle = `rgba(${C_PRIMARY}, ${0.9 * a})`;
+      ctx.beginPath(); ctx.arc(gx, gy, r, a0, a0 + (a1 - a0) * val); ctx.stroke();
+      ctx.lineCap = 'butt';
+      ctx.font = '500 15px "GT America Extended", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = `rgba(${C_PRIMARY}, ${a})`;
+      ctx.fillText(Math.round(val * 100), gx, gy + 1);
+    } else if (idx === 1) {
+      // KPI number + tiny bars.
+      ctx.font = '500 30px "GT America Extended", sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = `rgba(${C_PRIMARY}, ${a})`;
+      ctx.fillText(Math.round(val * 100) + '%', x + 12, y + cardH - 16);
+      const pts = seriesPts[idx].pts, n = 7, bw = 7;
+      for (let k = 0; k < n; k++) {
+        const v = pts[pts.length - n + k].val;
+        const bh = 4 + v * 26, bx = x + cardW - 14 - (n - k) * (bw + 3);
+        ctx.fillStyle = `rgba(${C_SECONDARY}, ${0.55 * a})`;
+        ctx.fillRect(bx, y + cardH - 14 - bh, bw, bh);
+      }
+    } else {
+      // Sparkline.
+      const pts = seriesPts[idx].pts, n = Math.min(24, pts.length);
+      const px0 = x + 12, pw = cardW - 24, py = y + cardH - 14, ph = 42;
+      ctx.strokeStyle = `rgba(${C_SECONDARY}, ${0.9 * a})`;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      for (let k = 0; k < n; k++) {
+        const v = pts[pts.length - n + k].val;
+        const X = px0 + pw * (k / (n - 1)), Y = py - v * ph;
+        k ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+      }
+      ctx.stroke();
+    }
+  });
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
 }
 
 // Context lens — translucent stacked areas under each series, reading as
@@ -390,6 +484,14 @@ function drawChart(dt, t) {
     ctx.save();
     ctx.globalAlpha = A.forecast;
     drawForecast(cx, cy, cw, ch, fc);
+    ctx.restore();
+  }
+
+  // Dashboards view — widget cards generated from the live signals.
+  if (A.dash > 0.01) {
+    ctx.save();
+    ctx.globalAlpha = A.dash;
+    drawDashboards(cx, cy, cw, ch, t, seriesPts);
     ctx.restore();
   }
 
