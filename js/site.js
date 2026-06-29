@@ -13,9 +13,10 @@
       const vh = window.innerHeight || 1;
       if (nav) nav.classList.toggle('scrolled', window.scrollY > vh * 0.6);
       if (canvas) {
-        // 1.0 over the hero, easing down to a faint ambient 0.12 once scrolled past it
+        // 1.0 over the hero, easing down to a quiet ambient 0.22 once scrolled past it
+        // so the WebGL spine stays subtly present through the content sections.
         const f = Math.min(window.scrollY / vh, 1);
-        canvas.style.opacity = (1 - f * 0.88).toFixed(3);
+        canvas.style.opacity = (1 - f * 0.78).toFixed(3);
       }
     };
     onScroll();
