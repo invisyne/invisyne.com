@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — Invisyne</title>
+  <meta name="description" content="Frequently asked questions about Invisyne: what it is, how it integrates with your existing systems, deployment, data security, and pilots.">
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preload" href="/assets/fonts/GT-America-Extended-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/GT-America-Extended-Regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="/css/main.css">
+  <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('invisyne-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+</head>
+<body class="subpage" data-page="resources">
+
+  <main>
+
+    <section class="section page-hero">
+      <div class="wrap">
+        <p class="kicker" data-i18n="res.faq">FAQ</p>
+        <h2 class="section-head" data-i18n="faq.head">Frequently asked questions</h2>
+        <p class="lede" data-i18n="faq.lede">The essentials about Invisyne, integration, deployment, and pilots.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary data-i18n="faq.q1">What is Invisyne?</summary>
+            <p data-i18n="faq.a1">Invisyne creates Industrial Intelligence — it captures machine and asset data continuously and turns it into a reliable understanding of how your machines behave, across the full lifecycle.</p>
+          </details>
+          <details class="faq-item">
+            <summary data-i18n="faq.q2">Do we have to replace our SCADA, historian, or IIoT system?</summary>
+            <p data-i18n="faq.a2">No. Invisyne builds on top of your existing connectivity and systems — it adds continuous operational memory and behaviour understanding, it does not replace what you already run.</p>
+          </details>
+          <details class="faq-item">
+            <summary data-i18n="faq.q3">Which data sources are supported?</summary>
+            <p data-i18n="faq.a3">Signals are captured directly at the source — Siemens S7, Modbus, OPC UA, and MQTT — up to thousands of variables per second.</p>
+          </details>
+          <details class="faq-item">
+            <summary data-i18n="faq.q4">On-premise or cloud?</summary>
+            <p data-i18n="faq.a4">A hybrid model. The Edge devices that capture data always run on-premise at the machine; Hub device management is cloud-based. On request, we can provide an on-premise data infrastructure on a project basis.</p>
+          </details>
+          <details class="faq-item">
+            <summary data-i18n="faq.q5">How fast can we see value?</summary>
+            <p data-i18n="faq.a5">Start with one machine and one use case. A focused pilot typically delivers a first reliable analysis within weeks, with no integration cost during the pilot.</p>
+          </details>
+          <details class="faq-item">
+            <summary data-i18n="faq.q6">Is our data secure and kept separate?</summary>
+            <p data-i18n="faq.a6">Yes. Hub runs as a single-tenant cloud service and you control access. Edge data is captured on-premise at the machine; for stricter data-residency requirements, an on-premise data infrastructure is available on request.</p>
+          </details>
+          <details class="faq-item">
+            <summary data-i18n="faq.q7">What does a pilot involve?</summary>
+            <p data-i18n="faq.a7">One plant, one machine, a defined goal. We connect to your data, build a baseline, and deliver a first analysis with measurable success criteria.</p>
+          </details>
+          <details class="faq-item">
+            <summary data-i18n="faq.q8">How does Invisyne help with regulatory requirements?</summary>
+            <p data-i18n="faq.a8">Continuous, timestamped, contextual records make machine behaviour traceable on demand — a solid foundation for audits and evidence.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta" id="cta">
+      <div class="wrap cta-inner">
+        <h2 class="cta-head" data-i18n="cta2.head">Start with a use case that creates measurable value today.</h2>
+        <div class="hero-cta">
+          <a class="btn btn-primary" data-i18n="pilot.cta.request" href="mailto:info@invisyne.com?subject=Invisyne%20pilot%20request&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AWe%27d%20like%20to%20run%20a%20pilot.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20line%3A%0D%0AGoal%3A%0D%0A">Request a pilot</a>
+          <a class="btn btn-ghost" href="/assessment.html" data-i18n="res.assessment">Industrial Self-Assessment</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/js/site-chrome.js"></script>
+  <script src="/js/translations.de.js"></script>
+  <script src="/js/theme.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/site.js"></script>
+</body>
+</html>

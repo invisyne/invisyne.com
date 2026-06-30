@@ -9,17 +9,118 @@ window.INVISYNE_DE = {
 
   /* — Navigation — */
   "nav.products": "Produkte",
+  "nav.platform": "Plattform",
+  "nav.usecases": "Anwendungsfälle",
+  "nav.stories": "Referenzen",
+  "nav.resources": "Ressourcen",
   "nav.why": "Warum Invisyne",
   "nav.latest": "Neuigkeiten",
+  "nav.references": "Referenzen",
+  "nav.docs": "Doku",
+  "nav.login": "Kunden-Login",
+
+  /* — Use-case submenu — */
+  "uc.commission": "Inbetriebnahme & Hochlauf",
+  "uc.operate": "Betreiben & Überwachen",
+  "uc.maintain": "Warten & Fehlersuche",
+  "uc.improve": "Maschinenleistung steigern",
+  "uc.scale": "Servicegeschäft skalieren",
+
+  /* — Resources submenu — */
+  "res.news": "Neuigkeiten",
+  "res.docs": "Dokumentation",
+  "res.faq": "FAQ",
+  "res.assessment": "Industrielle Selbsteinschätzung",
+
+  /* — Use-case descriptions — */
+  "ucd.commission": "Schaffen Sie ab Tag eins eine belastbare Baseline. Weniger Trial-and-Error, geringerer Engineering-Aufwand und ein schnellerer, stabilerer Weg in die Produktion.",
+  "ucd.operate": "Überwachen Sie Ihre Anlagen live von überall. Halten Sie den Betrieb stabil durch kontinuierliche Überwachung, erkennen Sie Abweichungen früh und vergleichen Sie das Maschinenverhalten über Ihre Flotte.",
+  "ucd.maintain": "Wenn etwas ausfällt, sehen Sie, was sich verändert hat. Nachvollziehbare Historie und Ereignisse beschleunigen die Ursachenanalyse und reduzieren Stillstand — mit weniger Abhängigkeit von einzelnen Experten.",
+  "ucd.improve": "Vergleichen Sie Runs, Chargen, Schichten und Assets, um Optimierungspotenziale zu finden — und machen Sie Maschinendaten nutzbar für KI-Tools, die Verhalten analysieren und Maßnahmen ableiten, um die OEE zu steigern.",
+  "ucd.scale": "Machen Sie aus Maschinendaten neue Servicemodelle: Remote-Service, Predictive Maintenance, datenbasierte SLAs und Product-as-a-Service — reproduzierbar, nicht abhängig von einzelnen Köpfen.",
+
+  /* — FAQ — */
+  "faq.head": "Häufige Fragen",
+  "faq.lede": "Das Wichtigste zu Invisyne, Integration, Betrieb und Piloten.",
+  "faq.q1": "Was ist Invisyne?",
+  "faq.a1": "Invisyne schafft Industrial Intelligence — es erfasst Maschinen- und Asset-Daten kontinuierlich und macht daraus ein belastbares Verständnis des Maschinenverhaltens über den gesamten Lebenszyklus.",
+  "faq.q2": "Müssen wir unser SCADA, Historian oder IIoT-System ersetzen?",
+  "faq.a2": "Nein. Invisyne baut auf Ihrer bestehenden Konnektivität und Ihren Systemen auf — es ergänzt kontinuierliches Betriebsgedächtnis und Verhaltensverständnis, statt Vorhandenes zu ersetzen.",
+  "faq.q3": "Welche Datenquellen werden unterstützt?",
+  "faq.a3": "Signale werden direkt an der Quelle erfasst — Siemens S7, Modbus, OPC UA und MQTT — bis zu tausende Variablen pro Sekunde.",
+  "faq.q4": "On-Premise oder Cloud?",
+  "faq.a4": "Ein hybrides Modell. Die Edge-Geräte zur Datenerfassung laufen immer on-premise an der Maschine; das Hub-Gerätemanagement ist cloudbasiert. Auf Anfrage stellen wir projektbezogen eine on-premise Dateninfrastruktur bereit.",
+  "faq.q5": "Wie schnell sehen wir einen Mehrwert?",
+  "faq.a5": "Starten Sie mit einer Maschine und einem Use Case. Ein fokussierter Pilot liefert in der Regel innerhalb von Wochen eine erste belastbare Auswertung — ohne Integrationskosten im Pilot.",
+  "faq.q6": "Sind unsere Daten sicher und getrennt?",
+  "faq.a6": "Ja. Hub läuft als mandantenreiner Cloud-Dienst, und Sie steuern die Zugriffe. Edge-Daten werden on-premise an der Maschine erfasst; für strengere Anforderungen an die Datenhaltung ist auf Anfrage eine on-premise Dateninfrastruktur verfügbar.",
+  "faq.q7": "Was umfasst ein Pilot?",
+  "faq.a7": "Eine Anlage, eine Maschine, ein definiertes Ziel. Wir binden Ihre Daten an, bauen eine Baseline und liefern eine erste Auswertung mit messbaren Erfolgskriterien.",
+  "faq.q8": "Wie hilft Invisyne bei regulatorischen Anforderungen?",
+  "faq.a8": "Kontinuierliche, zeitgestempelte und kontextbezogene Aufzeichnungen machen Maschinenverhalten auf Anfrage nachvollziehbar — eine solide Basis für Audits und Nachweise.",
+
+  /* — Self-Assessment — */
+  "assess.head": "Wie ausgereift ist Ihre Maschinenintelligenz?",
+  "assess.lede": "Beantworten Sie ein paar kurze Ja/Nein-Fragen und sehen Sie, wo Sie stehen — und wohin Invisyne Sie bringen kann.",
+
+  /* — Theme switch — */
+  "theme.dark": "Dunkel",
+  "theme.light": "Hell",
+
+  /* — Referenzen — */
+  "ref.head": "Bewährt im realen Betrieb.",
+  "ref.lede": "Invisyne ist heute im Feld im Einsatz — erfasst hochauflösendes Maschinenverhalten über verteilte Assets hinweg und macht daraus messbare Betriebsvorteile.",
+  "ref.s1.v": "Geräte im Feld im Einsatz",
+  "ref.s2.v": "weniger ungeplanter Stillstand",
+  "ref.s3.v": "erfasste Variablen pro Sekunde",
+  "ref.s4.v": "Abtastauflösung an der Edge",
+  "ref.case.tag": "Fallstudie · Wasserstoffsysteme",
+  "ref.case.h": "Hochdruck-H₂-Prüfung & -Produktion",
+  "ref.case.p": "Ein OEM für Wasserstoffsysteme nutzt Invisyne Crawler, um Maschinenverhalten über Elektrolyseure, Kompressoren und Prüfstände kontinuierlich zu erfassen — ein durchgängiges Betriebsgedächtnis ab der Inbetriebnahme. Ergebnis: schnellere Ursachenanalyse und ein dokumentierter Rückgang ungeplanter Stillstände.",
+  "ref.case.note": "Namentliche Referenzen und Zitate auf Anfrage.",
 
   /* — Buttons / CTAs — */
   "cta.demo": "Demo vereinbaren",
   "cta.hub": "Hub öffnen →",
   "cta.docs": "Dokumentation ansehen →",
 
+  /* — Homepage v3: Pilot-CTA — */
+  "pilot.chip": "Pilot · 6 Wochen · ein Projekt, eine Linie, eine Antwort",
+  "pilot.title.a": "Verstehe deine",
+  "pilot.title.b": "Maschine. Heute.",
+  "pilot.sub": "Von rohen Signalen zu Verhaltensverständnis, Ursachen-Nachweis und umsetzbaren Entscheidungen — in einem Pilot, an einer Maschine.",
+  "pilot.cta.request": "Pilot anfragen",
+  "pilot.cta.tour": "Plattform-Tour",
+  "pilot.stat.weeks.k": "6 Wochen",
+  "pilot.stat.weeks.v": "vom Kick-off zur ersten Auswertung",
+  "pilot.stat.cost.k": "0 €",
+  "pilot.stat.cost.v": "Integrationskosten im Pilot",
+  "pilot.stat.deploy.k": "Hybrid",
+  "pilot.stat.deploy.v": "Edge on-prem, Hub in der Cloud",
+
+  /* — Homepage v3: Footer — */
+  "footer.tagline": "Where machine memory becomes operational intelligence.",
+  "foot.platform": "Plattform & Produkte",
+  "foot.why": "Warum Invisyne",
+  "foot.latest": "Neuigkeiten",
+  "foot.imprint": "Impressum",
+  "imprint.title": "Impressum",
+
   /* — Hero — */
-  "hero.title": "Where machine memory becomes operational intelligence.",
-  "hero.sub": "Invisyne schafft Industrial Intelligence für Maschinen, Anlagen und verteilte Assets. Aus kontinuierlich erfassten Betriebsdaten entsteht ein belastbares Verständnis des Anlagenverhaltens — damit Teams schneller reagieren, bessere Entscheidungen treffen und Wissen über den gesamten Lebenszyklus sichern.",
+  "hero.title": "Maschinenverhalten verstehen. Über den gesamten Lebenszyklus.",
+  "hero.support": "Where machine memory becomes operational intelligence.",
+  "hero.sub": "Maschinenverhalten verstehen. Über den gesamten Lebenszyklus.",
+  "hero.acc": "Beschleunigen",
+  "hero.acc1": "Schnellere Inbetriebnahme",
+  "hero.acc2": "Schnellere Ursachenanalyse",
+  "hero.pre": "Bewahren",
+  "hero.pre1": "Maschinenwissen, das nie verloren geht",
+  "hero.pre2": "Vollständige Maschinenhistorie",
+  "hero.scale": "Skalieren",
+  "hero.scale1": "Maschinenverhalten über die Flotte vergleichen",
+  "hero.scale2": "Datenbasierte Servicemodelle aufbauen",
+  "cta.howitworks": "So funktioniert's",
+  "cta.findout": "Mehr erfahren",
 
   /* — Ihr Nutzen (Benefits) — */
   "gain.kicker": "Ihr Nutzen",

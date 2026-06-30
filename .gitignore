@@ -11,3 +11,6 @@ js/V5/
 
 # Editor workspace
 .obsidian/
+
+# Internal planning doc - not for the public web (see CLAUDE.md)
+SITEMAP.md

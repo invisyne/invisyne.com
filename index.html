@@ -14,351 +14,101 @@
   <link rel="preload" href="/assets/fonts/GT-America-Extended-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
   <link rel="stylesheet" href="/css/main.css">
-</head>
-<body>
-  <canvas id="bg"></canvas>
 
-  <!-- ===== Sticky nav (reveals on scroll) ===== -->
-  <header class="nav" id="nav">
-    <a class="nav-brand" href="#top" aria-label="Invisyne — home">
-      <img src="/assets/logos/invisyne-wordmark-color-pos.svg" alt="Invisyne" width="132">
-    </a>
-    <nav class="nav-links">
-      <a href="#products" data-i18n="nav.products">Products</a>
-      <a href="#why" data-i18n="nav.why">Why Invisyne</a>
-      <a href="#latest" data-i18n="nav.latest">Latest</a>
-      <a href="https://hub.invisyne.com" target="_blank" rel="noopener">Hub ↗</a>
-      <a href="https://docs.invisyne.com" target="_blank" rel="noopener">Docs ↗</a>
-      <a class="btn btn-primary btn-sm" data-i18n="cta.demo" href="mailto:info@invisyne.com?subject=Invisyne%20request%20a%20demo&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AI%27d%20like%20to%20request%20a%20demo.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20use%20case%3A%0D%0APreferred%20time%3A%0D%0A">Book a demo</a>
-      <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
-        <button type="button" data-lang="en">EN</button>
-        <button type="button" data-lang="de">DE</button>
-      </div>
-    </nav>
-  </header>
+  <!-- Set theme before first paint (default dark) to avoid a flash on reload -->
+  <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('invisyne-theme')||'dark')}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+</head>
+<body data-page="home">
 
   <main id="top">
 
-    <!-- ===== HERO ===== -->
-    <section class="hero">
-      <div class="hero-inner">
-        <img class="hero-mark" src="/assets/logos/invisyne-wordmark-color-pos.svg" alt="Invisyne" width="300">
-        <h1 class="hero-title" data-i18n="hero.title" data-reveal-split>Where machine memory becomes operational intelligence.</h1>
-        <p class="hero-sub" data-i18n="hero.sub">Invisyne creates Industrial Intelligence for machines, systems, and distributed assets. Continuously captured operational data becomes a reliable understanding of asset behavior — helping teams respond faster, make better decisions, and preserve knowledge across the full lifecycle.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" data-i18n="cta.demo" href="mailto:info@invisyne.com?subject=Invisyne%20request%20a%20demo&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AI%27d%20like%20to%20request%20a%20demo.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20use%20case%3A%0D%0APreferred%20time%3A%0D%0A">Book a demo</a>
-          <a class="btn btn-ghost" data-i18n="cta.hub" href="https://hub.invisyne.com" target="_blank" rel="noopener">Open Hub →</a>
-          <a class="btn btn-ghost" data-i18n="cta.docs" href="https://docs.invisyne.com" target="_blank" rel="noopener">View the docs →</a>
-        </div>
-      </div>
-      <a class="scroll-cue" href="#benefits" aria-label="Scroll down">
-        <span></span>
-      </a>
-    </section>
+    <!-- ===== LEAD: hero + ticker fill the first screen (no scroll needed) ===== -->
+    <section class="lead">
+      <div class="hero">
+        <div class="hero-inner">
+          <img class="hero-mark theme-logo" src="/assets/logos/invisyne-wordmark-color-neg.svg" alt="Invisyne" width="300">
+          <p class="kicker hero-support" data-i18n="hero.support">Where machine memory becomes operational intelligence.</p>
+          <h1 class="hero-title" data-i18n="hero.title">Understand machine behaviour. Across the entire lifecycle.</h1>
 
-    <!-- ===== BENEFITS — what you gain (lead) ===== -->
-    <section class="section benefits" id="benefits">
-      <div class="wrap">
-        <p class="kicker" data-i18n="gain.kicker" data-reveal>What you gain</p>
-        <h2 class="section-head" data-i18n="gain.head" data-reveal-split>Gain value by solving real operational problems with industrial intelligence.</h2>
-        <div class="benefit-grid">
-          <article class="tile benefit" data-reveal>
-            <h3 data-i18n="ben.commissioning.h">Accelerate commissioning</h3>
-            <p data-i18n="ben.commissioning.p">Build a reliable baseline for a machine, system, or asset from day one. Deviations become visible earlier, trial-and-error is reduced, and the path to stable operation gets shorter.</p>
-          </article>
-          <article class="tile benefit" data-reveal>
-            <h3 data-i18n="ben.downtime.h">Find root causes faster</h3>
-            <p data-i18n="ben.downtime.p">When an asset fails, one question matters: What changed? Invisyne makes operational history and relevant events traceable so teams can narrow down causes faster and reduce downtime.</p>
-          </article>
-          <article class="tile benefit" data-reveal>
-            <h3 data-i18n="ben.fleet.h">Compare assets</h3>
-            <p data-i18n="ben.fleet.p">Compare machines, compressors, lines, stations, well pads, or entire sites. Unusual behavior becomes visible early — before it turns into downtime, quality issues, or production losses.</p>
-          </article>
-          <article class="tile benefit" data-reveal>
-            <h3 data-i18n="ben.budget.h">Start with one use case</h3>
-            <p data-i18n="ben.budget.p">No major platform project. Start with a specific problem: commissioning, troubleshooting, condition monitoring, asset transparency, service scaling, or compliance evidence.</p>
-          </article>
-          <article class="tile benefit" data-reveal>
-            <h3 data-i18n="ben.open.h">Use existing infrastructure</h3>
-            <p data-i18n="ben.open.p">Invisyne does not replace your connectivity. It builds on top of it. Data from PLCs, OPC UA, Modbus, MQTT, or existing systems is captured continuously, structured, and made usable.</p>
-          </article>
-          <article class="tile benefit" data-reveal>
-            <h3 data-i18n="ben.service.h">Scale service and operations</h3>
-            <p data-i18n="ben.service.p">Knowledge no longer stays in the heads of a few experts. Service, maintenance, and operations teams work with traceable history, comparable baselines, and reliable operational knowledge.</p>
-          </article>
-
-          <article class="tile kpi kpi-banner" aria-label="Key metrics">
-            <div class="kpi-text">
-              <div class="tile-label"><span class="dot"></span><span data-i18n="kpi.proof">Proof · in the field</span></div>
-              <div class="kpi-number"><span id="kpiVal">0</span><span class="kpi-unit" id="kpiUnit">+</span></div>
-              <div class="kpi-label" id="kpiLabel">devices deployed in the field</div>
+          <div class="hero-benefits">
+            <div class="hero-benefit">
+              <h4 data-i18n="hero.acc">Accelerate</h4>
+              <ul>
+                <li data-i18n="hero.acc1">Faster commissioning</li>
+                <li data-i18n="hero.acc2">Faster root-cause analysis</li>
+              </ul>
             </div>
-            <div class="kpi-bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== THE SHIFT ===== -->
-    <section class="section shift" id="shift">
-      <div class="wrap">
-        <p class="kicker" data-i18n="shift.kicker" data-reveal>The shift</p>
-        <h2 class="shift-head" data-i18n="shift.head" data-reveal-split>Data shows what happened. Industrial Intelligence explains what it means.</h2>
-        <p class="lede" data-i18n="shift.lede" data-reveal>Many companies already have SCADA, historians, IIoT, dashboards, or remote access. But the most important question often remains unanswered: Why does this machine, system, or asset behave differently today than it did yesterday? Invisyne adds continuous operational memory to existing systems and makes behavior, deviations, and root causes understandable in real operations.</p>
-      </div>
-    </section>
-
-    <!-- ===== HOW IT WORKS ===== -->
-    <section class="section how" id="how">
-      <div class="wrap">
-        <p class="kicker" data-i18n="how.kicker" data-reveal>The Invisyne principle</p>
-        <h2 class="section-head" data-i18n="how.head" data-reveal-split>From signals to understanding. From understanding to better decisions.</h2>
-        <div class="flow" aria-label="Signals to Context to Insights to Actions">
-          <article class="flow-step">
-            <div class="tile-label"><span class="dot"></span><span data-i18n="flow1.label">01 · Signals</span></div>
-            <h3 data-i18n="flow1.h">Capture</h3>
-            <p data-i18n="flow1.p">Crawler records measurements, states, and events directly at the machine, system, or asset — high-frequency, local, and continuous.</p>
-            <span class="flow-tag" data-i18n="flow1.tag">Crawler</span>
-          </article>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <article class="flow-step">
-            <div class="tile-label"><span class="dot"></span><span data-i18n="flow2.label">02 · Context</span></div>
-            <h3 data-i18n="flow2.h">Structure</h3>
-            <p data-i18n="flow2.p">Operational data is linked with relevant machine, asset, and operating context. This creates a traceable picture of actual behavior.</p>
-            <span class="flow-tag" data-i18n="flow2.tag">Hub</span>
-          </article>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <article class="flow-step">
-            <div class="tile-label"><span class="dot"></span><span data-i18n="flow3.label">03 · Insights</span></div>
-            <h3 data-i18n="flow3.h">Understand</h3>
-            <p data-i18n="flow3.p">Patterns, deviations, and root causes become visible. Teams not only see that something happened — they can better understand when, where, and why.</p>
-            <span class="flow-tag" data-i18n="flow3.tag">Deepview · Hub Analytics</span>
-          </article>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <article class="flow-step">
-            <div class="tile-label"><span class="dot"></span><span data-i18n="flow4.label">04 · Actions</span></div>
-            <h3 data-i18n="flow4.h">Act</h3>
-            <p data-i18n="flow4.p">Understanding turns into operational decisions: react faster, prioritize maintenance, scale service, reduce risk, and improve processes.</p>
-            <span class="flow-tag" data-i18n="flow4.tag">Hub · Roadmap</span>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== USE CASES ===== -->
-    <section class="section usecases" id="use-cases">
-      <div class="wrap">
-        <p class="kicker" data-i18n="use.kicker" data-reveal>Use Cases</p>
-        <h2 class="section-head" data-i18n="use.head" data-reveal-split>Industrial Intelligence in action.</h2>
-        <p class="lede usecase-note" data-i18n="use.note" data-reveal>Start where value is measurable — with one concrete problem, a clear data foundation, and defined success criteria.</p>
-        <div class="usecase-grid">
-          <article class="tile usecase" data-reveal>
-            <h3 data-i18n="use.diagnostics.h">Diagnostics &amp; Root-Cause</h3>
-            <p data-i18n="use.diagnostics.p">Understand failures faster, narrow down causes, and spend less time searching manually through data, alarms, and expert memory.</p>
-          </article>
-          <article class="tile usecase" data-reveal>
-            <h3 data-i18n="use.downtime.h">Prevent Downtime</h3>
-            <p data-i18n="use.downtime.p">Detect deviations early before they lead to unplanned downtime, production losses, or service escalations.</p>
-          </article>
-          <article class="tile usecase" data-reveal>
-            <h3 data-i18n="use.knowledge.h">Knowledge Retention</h3>
-            <p data-i18n="use.knowledge.p">Preserve operational and service knowledge systematically — independent of whether individual experts are available or still with the company.</p>
-          </article>
-          <article class="tile usecase" data-reveal>
-            <h3 data-i18n="use.compare.h">Comparison &amp; Optimization</h3>
-            <p data-i18n="use.compare.p">Compare machines, assets, runs, sites, or operating states and identify optimization opportunities based on real behavior.</p>
-          </article>
-          <article class="tile usecase" data-reveal>
-            <h3 data-i18n="use.business.h">New Business Models</h3>
-            <p data-i18n="use.business.p">Create the foundation for remote service, predictive maintenance, data-driven SLAs, and product-as-a-service models.</p>
-          </article>
-          <article class="tile usecase" data-reveal>
-            <h3 data-i18n="use.compliance.h">Compliance &amp; Evidence</h3>
-            <p data-i18n="use.compliance.p">Document machine and asset behavior in a traceable way and prepare technical evidence more easily — for audits, quality, safety, and regulatory requirements.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== PRODUCTS ===== -->
-    <section class="section products" id="products">
-      <div class="wrap">
-        <p class="kicker" data-i18n="prod.kicker" data-reveal>Products</p>
-        <h2 class="section-head" data-i18n="prod.head" data-reveal-split>Four products. One continuous path from machine memory to Industrial Intelligence.</h2>
-        <p class="lede products-note" data-i18n="prod.note" data-reveal>Crawler, Hub, Deepview, and Companion create the technical foundation: capture, structure, understand, and apply.</p>
-        <div class="product-grid">
-
-          <article class="tile product" data-reveal>
-            <div class="tile-label"><span class="dot"></span><span data-i18n="p.edge.label">Data capture</span></div>
-            <h3 class="product-logo"><img src="/assets/logos/products/edge-wordmark-color-pos.svg" alt="Edge" height="28"></h3>
-            <p class="product-tag" data-i18n="p.edge.tag">The digital memory of your machine or asset.</p>
-            <p class="product-desc" data-i18n="p.edge.desc">Crawler captures signals directly at the source — Siemens S7, Modbus, OPC UA, MQTT — up to 5,000 variables per second at 50 ms. What used to be lost after a failure remains available as continuous history.</p>
-          </article>
-
-          <article class="tile product" data-reveal>
-            <div class="tile-label"><span class="dot"></span><span data-i18n="p.hub.label">Overview &amp; operations</span></div>
-            <h3 class="product-logo"><img src="/assets/logos/products/hub-wordmark-color-pos.svg" alt="Hub" height="28"></h3>
-            <p class="product-tag" data-i18n="p.hub.tag">The command center for operational knowledge.</p>
-            <p class="product-desc" data-i18n="p.hub.desc">Hub manages devices, firmware, users, roles, dashboards, and alerts. Operators and OEMs gain one central view across machines, sites, fields, and asset groups.</p>
-            <a class="tile-link" data-i18n="p.hub.link" href="https://hub.invisyne.com" target="_blank" rel="noopener">Open Hub ↗</a>
-          </article>
-
-          <article class="tile product" data-reveal>
-            <div class="tile-label"><span class="dot"></span><span data-i18n="p.deep.label">Analysis</span></div>
-            <h3 class="product-logo"><img src="/assets/logos/products/deepview-wordmark-color-pos.svg" alt="Deepview" height="28"></h3>
-            <p class="product-tag" data-i18n="p.deep.tag">From signals to root causes.</p>
-            <p class="product-desc" data-i18n="p.deep.desc">Deepview analyzes high-resolution time series and compares runs, batches, shifts, time windows, or assets. Teams see what changed — and why it matters.</p>
-          </article>
-
-          <article class="tile product" data-reveal>
-            <div class="tile-label"><span class="dot"></span><span data-i18n="p.comp.label">Field</span></div>
-            <h3 class="product-logo"><img src="/assets/logos/products/companion-wordmark-color-pos.svg" alt="Companion" height="28"></h3>
-            <p class="product-tag" data-i18n="p.comp.tag">Make Industrial Intelligence usable in the field.</p>
-            <p class="product-desc" data-i18n="p.comp.desc">Companion is the Windows app for commissioning, service, and field work: discover devices, configure, update, and export data — locally on the network, even without cloud access.</p>
-          </article>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== WHY INVISYNE ===== -->
-    <section class="section why" id="why">
-      <div class="wrap">
-        <p class="kicker" data-i18n="why.kicker" data-reveal>Why Invisyne</p>
-        <h2 class="section-head why-head" data-i18n="why.head" data-reveal>Gateways connect. IIoT visualizes. SCADA monitors. <span class="accent">Invisyne turns data into meaning.</span></h2>
-        <p class="lede" data-i18n="why.lede" data-reveal>More data was never the problem. Invisyne turns operational data into understanding teams can act on — delivered simply, with flexible pricing, and end to end from a single source.</p>
-        <div class="feature-cards">
-          <article class="feature-card" data-reveal>
-            <p class="feature-tag" data-i18n="f.a.tag">A · Intelligence</p>
-            <h3 data-i18n="f.a.h">Turn data into meaning</h3>
-            <p class="feature-body" data-i18n="f.a.body">Invisyne continuously captures machine and asset data and turns it into a clear, usable understanding of how your operation behaves — the foundation for faster, better decisions across the lifecycle.</p>
-          </article>
-          <article class="feature-card" data-reveal>
-            <p class="feature-tag" data-i18n="f.b.tag">B · Simplicity</p>
-            <h3 data-i18n="f.b.h">Intuitive by design</h3>
-            <p class="feature-body" data-i18n="f.b.body">Intuitive interfaces keep onboarding minimal and reduce operator workload, with clear overviews and short paths to the information that matters.</p>
-          </article>
-          <article class="feature-card" data-reveal>
-            <p class="feature-tag" data-i18n="f.c.tag">C · Pricing</p>
-            <h3 data-i18n="f.c.h">Flexible pricing</h3>
-            <p class="feature-body" data-i18n="f.c.body">Whether a single device, a subscription, or a large-scale rollout, the commercial model adapts to your needs — transparent, predictable, and scoped to actual usage.</p>
-          </article>
-          <article class="feature-card" data-reveal>
-            <p class="feature-tag" data-i18n="f.d.tag">D · One source</p>
-            <h3 data-i18n="f.d.h">End-to-end from a single source</h3>
-            <p class="feature-body" data-i18n="f.d.body">From signal capture to action, the entire chain comes from one source — no fragmented tooling or multi-vendor integration, for faster deployment and operation.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== LATEST ===== -->
-    <section class="section latest" id="latest">
-      <div class="wrap">
-        <p class="kicker" data-i18n="latest.kicker" data-reveal>Latest</p>
-        <h2 class="section-head" data-i18n="latest.head" data-reveal-split>The platform keeps moving forward.</h2>
-        <p class="lede" data-i18n="latest.lede" data-reveal>Crawler, Hub, and Companion are continuously improved. See the latest updates here — with the full history in each changelog.</p>
-        <div class="release-grid">
-
-          <a class="tile release" href="https://docs.invisyne.com/de/edge/changelog/" target="_blank" rel="noopener" data-reveal>
-            <div class="release-head">
-              <span class="release-name">Edge <span class="release-sub">· Crawler</span></span>
-              <span class="release-ver">v2.22.0</span>
+            <div class="hero-benefit">
+              <h4 data-i18n="hero.pre">Preserve</h4>
+              <ul>
+                <li data-i18n="hero.pre1">Machine knowledge that never gets lost</li>
+                <li data-i18n="hero.pre2">Complete machine history</li>
+              </ul>
             </div>
-            <ul class="release-list">
-              <li><span class="release-date">29 Jun 2026 · 2.22.0</span> <span data-i18n="rel.edge.1">HTTPS hardening across all system services — custom certificates and an HTTP fallback mode.</span></li>
-              <li><span class="release-date">16 Apr 2026 · 2.21.0</span> <span data-i18n="rel.edge.2">Runs — full Run-data CSV export, run configuration in the UI, manual gateway reconnect.</span></li>
-            </ul>
-            <span class="release-link" data-i18n="rel.link">View changelog ↗</span>
-          </a>
-
-          <a class="tile release" href="https://docs.invisyne.com/de/hub/changelog/" target="_blank" rel="noopener" data-reveal>
-            <div class="release-head">
-              <span class="release-name">Hub</span>
-              <span class="release-ver">v1.5.0</span>
+            <div class="hero-benefit">
+              <h4 data-i18n="hero.scale">Scale</h4>
+              <ul>
+                <li data-i18n="hero.scale1">Compare machine behaviour across your fleet</li>
+                <li data-i18n="hero.scale2">Build data-driven service models</li>
+              </ul>
             </div>
-            <ul class="release-list">
-              <li><span class="release-date">29 Jun 2026 · 1.5.0</span> <span data-i18n="rel.hub.1">Uniform display of empty fields and a device-count badge on the device list.</span></li>
-              <li><span class="release-date">24 Jun 2026 · 1.4.0</span> <span data-i18n="rel.hub.2">New Invisyne Design System, a system-wide changelog, and light/dark mode.</span></li>
-            </ul>
-            <span class="release-link" data-i18n="rel.link">View changelog ↗</span>
-          </a>
-
-          <a class="tile release" href="https://docs.invisyne.com/de/companion/changelog/" target="_blank" rel="noopener" data-reveal>
-            <div class="release-head">
-              <span class="release-name">Companion</span>
-              <span class="release-ver">v1.3.0</span>
-            </div>
-            <ul class="release-list">
-              <li><span class="release-date">29 Jun 2026 · 1.3.0</span> <span data-i18n="rel.comp.1">Compatibility with Edge 2.22 — device-password authentication for configuration changes.</span></li>
-              <li><span class="release-date">24 Jun 2026 · 1.2.0</span> <span data-i18n="rel.comp.2">Optional Hub login for Deepview, and uploading runs to Deepview workspaces.</span></li>
-            </ul>
-            <span class="release-link" data-i18n="rel.link">View changelog ↗</span>
-          </a>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== FINAL CTA ===== -->
-    <section class="section cta" id="cta">
-      <div class="wrap cta-inner">
-        <h2 class="cta-head" data-i18n="cta2.head" data-reveal-split>Start with a use case that creates measurable value today.</h2>
-        <p class="cta-sub" data-i18n="cta2.sub">For example: accelerate commissioning, find root causes faster, prevent downtime, preserve knowledge, compare assets, digitize service, or simplify technical evidence. Together, we define the use case, the data foundation, and measurable success criteria.</p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" data-i18n="cta.demo" href="mailto:info@invisyne.com?subject=Invisyne%20request%20a%20demo&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AI%27d%20like%20to%20request%20a%20demo.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20use%20case%3A%0D%0APreferred%20time%3A%0D%0A">Book a demo</a>
-          <a class="btn btn-ghost" data-i18n="cta.hub" href="https://hub.invisyne.com" target="_blank" rel="noopener">Open Hub →</a>
-          <a class="btn btn-ghost" data-i18n="cta.docs" href="https://docs.invisyne.com" target="_blank" rel="noopener">View the docs →</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== FOOTER + IMPRINT ===== -->
-    <footer class="footer" id="imprint">
-      <div class="wrap">
-        <div class="footer-top">
-          <div class="footer-brand">
-            <img class="footer-mark" src="/assets/logos/invisyne-wordmark-color-pos.svg" alt="Invisyne" width="140">
-            <p class="footer-tagline" data-i18n="footer.tagline">Where machine memory becomes operational intelligence.</p>
           </div>
-          <div class="imprint">
-            <p class="imprint-title" data-i18n="imprint.title">Imprint</p>
-            <div class="imprint-cols">
-              <address class="imprint-entity">
-                <strong><a href="https://www.dr-ecklebe.de" target="_blank" rel="noopener">Dr. Ecklebe GmbH</a></strong>
-                Brockenblick 29<br>
-                <span data-i18n="imprint.de.city">38855 Wernigerode OT Reddeber, Germany</span><br>
-                <span class="imprint-meta">Amtsgericht Stendal · HRB 100778 · VAT&nbsp;DE&nbsp;139575472</span><br>
-                <a href="tel:+4939435606 0">+49 (0) 3943 5606 0</a> · <a href="mailto:mail@dr-ecklebe.de">mail@dr-ecklebe.de</a>
-              </address>
-              <address class="imprint-entity">
-                <strong><a href="https://www.ecklebeautomation.com" target="_blank" rel="noopener">ECKLEBE Automation Inc.</a></strong>
-                1 Concourse Pkwy, Suite 800<br>
-                <span data-i18n="imprint.us.city">Atlanta, GA 30328, USA</span><br>
-                <a href="tel:+18328892486">+1 (832) 889-2486</a>
-              </address>
+
+          <a class="btn btn-primary hero-cta-btn" href="#pilot" data-i18n="cta.findout">Find out more</a>
+        </div>
+      </div>
+
+      <!-- BENEFIT TICKER — single line: numbers + benefits -->
+      <div class="ticker" aria-label="Key metrics">
+        <span class="ticker-edge top" aria-hidden="true"></span>
+        <span class="ticker-edge bot" aria-hidden="true"></span>
+        <div class="ticker-row nums b" data-ticker="nums" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- ===== PILOT CTA + datamorph background ===== -->
+    <section class="pilot" id="pilot">
+      <iframe class="pilot-bg" src="/data-morph.html?bg=1&theme=dark&transparent=1"
+              title="Invisyne data flow" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
+      <div class="pilot-scrim" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="pilot-inner">
+          <span class="chip" data-i18n="pilot.chip"><span class="chip-dot"></span>Pilot · 6 weeks · one project, one line, one answer</span>
+          <h2 class="pilot-title" id="pilotTitle">
+            <span class="pt-a">Understand your</span>
+            <span class="accent pt-b">machine. Today.</span>
+          </h2>
+          <p class="pilot-sub" data-i18n="pilot.sub">From raw signals to behaviour understanding, root-cause evidence and actionable decisions — in one pilot, on one machine.</p>
+          <div class="hero-cta pilot-cta">
+            <a class="btn btn-primary" data-i18n="pilot.cta.request"
+               href="mailto:info@invisyne.com?subject=Invisyne%20pilot%20request&body=Hi%20Invisyne%20team%2C%0D%0A%0D%0AWe%27d%20like%20to%20run%20a%20pilot.%0D%0A%0D%0ACompany%3A%0D%0AMachine%20%2F%20line%3A%0D%0AGoal%3A%0D%0A">Request a pilot →</a>
+            <a class="btn btn-ghost" data-i18n="pilot.cta.tour" href="/platform.html">Platform Tour →</a>
+          </div>
+          <div class="pilot-stats">
+            <div class="pilot-stat">
+              <div class="stat-k" data-i18n="pilot.stat.weeks.k">6 weeks</div>
+              <div class="stat-v" data-i18n="pilot.stat.weeks.v">from kick-off to first analysis</div>
+            </div>
+            <div class="pilot-stat">
+              <div class="stat-k" data-i18n="pilot.stat.cost.k">€0</div>
+              <div class="stat-v" data-i18n="pilot.stat.cost.v">integration cost during the pilot</div>
+            </div>
+            <div class="pilot-stat">
+              <div class="stat-k" data-i18n="pilot.stat.deploy.k">Hybrid</div>
+              <div class="stat-v" data-i18n="pilot.stat.deploy.v">Edge on-prem, Hub in the cloud</div>
             </div>
           </div>
         </div>
-        <div class="footer-bottom">
-          <div class="footer-links">
-            <a href="https://hub.invisyne.com" target="_blank" rel="noopener">Hub</a>
-            <a href="https://docs.invisyne.com" target="_blank" rel="noopener">Docs</a>
-            <a href="#imprint" data-i18n="foot.imprint">Imprint</a>
-          </div>
-          <p class="footer-meta">© 2026 Invisyne · invisyne.com</p>
-        </div>
       </div>
-    </footer>
+    </section>
 
   </main>
 
-  <script src="/js/scene.js"></script>
-  <script src="/js/vendor/gsap.min.js"></script>
-  <script src="/js/vendor/ScrollTrigger.min.js"></script>
+  <script src="/js/site-chrome.js"></script>
   <script src="/js/translations.de.js"></script>
+  <script src="/js/theme.js"></script>
   <script src="/js/i18n.js"></script>
   <script src="/js/site.js"></script>
-  <script type="module" src="/js/cinema/boot.js"></script>
+  <script src="/js/v3.js"></script>
 </body>
 </html>

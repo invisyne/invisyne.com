@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>invisyne · Datenexploration</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #050608; overflow: hidden; }
+  #stage {
+    display: block; width: 100vw; height: 100vh;
+    background:
+      radial-gradient(900px 600px at 80% 18%, rgba(37,73,255,0.10), transparent 60%),
+      radial-gradient(900px 600px at 12% 88%, rgba(191,77,243,0.08), transparent 60%),
+      #050608;
+    cursor: crosshair;
+  }
+  html.dm-transparent, html.dm-transparent body, html.dm-transparent #stage { background: transparent !important; }
+  /* light theme — matches www.invisyne.com (#EEF0F5 background) */
+  html.dm-light, html.dm-light body { background:#EEF0F5; }
+  html.dm-light #stage { background:
+      radial-gradient(900px 600px at 80% 18%, rgba(37,73,255,0.06), transparent 60%),
+      radial-gradient(900px 600px at 12% 88%, rgba(191,77,243,0.05), transparent 60%),
+      #EEF0F5; cursor:crosshair; }
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<script>
+"use strict";
+/*
+ * invisyne — standalone data-exploration animation. Zero dependencies, responsive,
+ * embeddable. A cloud of ~3,600 "data points" seamlessly morphs through seven
+ * scenes on an explicit timeline and loops:
+ *   0 Oszilloskop  — torque / rpm / line-speed of a paper-mill winder (real relation)
+ *   1 Dashboard    — bars + course + axes, holds STILL
+ *   2 Sankey       — dynamic streaming flow
+ *   3 Limit        — one signal (with spikes) scrolls r→l; breaches flag EVENTs;
+ *                    a 2nd binary signal below goes HIGH while an event is active
+ *   4 Prediction   — signal flows in under a high/low cloud, forks into 3 predictions,
+ *                    one crosses the threshold and raises an alarm
+ *   5 Table        — points arrange into a fixed data table
+ *   6 Logo         — dynamic flow in the shape of the invisyne signet
+ *
+ * Query params:
+ *   ?embed=1        hide the on-canvas caption/progress (for site embedding)
+ *   ?transparent=1  transparent background (fades trails via destination-out)
+ *   ?scene=0..6     lock to a single live scene (skips cross-blend)
+ * Posts {source:'dataMorph', scene, cycle} to parent on each scene change.
+ */
+
+const N = 3600;            // +50% points
+const PHASES = 7;
+const PI = Math.PI;
+
+const SEGMENTS = [
+  { scene:0, tr:1.5, hold:5.0 },
+  { scene:1, tr:2.0, hold:4.0 },
+  { scene:2, tr:2.0, hold:3.0 },
+  { scene:3, tr:2.0, hold:5.0 },
+  { scene:4, tr:2.0, hold:5.0 },
+  { scene:5, tr:2.0, hold:4.0 },
+  { scene:6, tr:2.0, hold:5.0 },
+];
+let CYCLE = 0; const STARTS = [];
+for (const s of SEGMENTS){ STARTS.push(CYCLE); CYCLE += s.tr + s.hold; }
+function segAt(ct){ for(let i=SEGMENTS.length-1;i>=0;i--){ if(ct>=STARTS[i]) return i; } return 0; }
+
+const QS = new URLSearchParams(location.search);
+const BG = QS.has('bg');                      // pure-background preset: no chrome + full-bleed
+const EMBED = QS.has('embed') || BG;          // hide the on-canvas caption + progress bar
+const TRANSPARENT = QS.has('transparent') || QS.has('clear');
+const _tp = QS.get('theme');                  // 'light' | 'dark' | 'auto' (default dark)
+const LIGHT = _tp==='light' || (_tp==='auto' && matchMedia('(prefers-color-scheme: light)').matches);
+const LOCK = QS.has('scene') ? clampInt(+QS.get('scene'), 0, PHASES-1) : -1;
+function clampInt(v,lo,hi){ v=Math.round(v||0); return v<lo?lo:v>hi?hi:v; }
+
+const C = {
+  blue:[37,73,255], blueSoft:[109,131,255], violet:[191,77,243],
+  violetSoft:[215,125,247], teal:[43,189,182], orange:[247,131,55],
+  ok:[88,208,120], warn:[251,191,36], bad:[248,113,113], ink:[120,132,170],
+};
+const CURVE = [C.blue, C.teal, C.violet];
+// theme tokens — particles blend toward HL for "highlights" (white on dark, near-black on light)
+const HL = LIGHT ? [13,15,24] : [255,255,255];
+const BGFILL   = LIGHT ? 'rgba(238,240,245,0.32)' : 'rgba(5,6,8,0.26)';
+const PCOMP    = LIGHT ? 'source-over' : 'lighter';   // light bg: normal compositing (no glow wash-out)
+const T_CAPTION= LIGHT ? 'rgba(25,26,32,0.80)'  : 'rgba(215,220,232,0.7)';
+const T_NEUTRAL= LIGHT ? 'rgba(116,107,125,0.95)': 'rgba(160,173,193,0.9)';
+const T_AXIS   = LIGHT ? 'rgba(116,107,125,0.5)' : 'rgba(120,132,170,0.45)';
+const T_GRID   = LIGHT ? 'rgba(116,107,125,0.22)': 'rgba(120,132,170,0.30)';
+const T_HEAD   = LIGHT ? 'rgba(25,26,32,0.92)'   : 'rgba(215,220,232,0.9)';
+const LABELS = [
+  'Live signals · paper-mill winder',
+  'Point cloud becomes a dashboard',
+  'Data flow · dynamic Sankey chart',
+  'Limit monitoring · events on exceedance',
+  'Signal flow · 3 predictions & alarm',
+  'Data table · structured machine values',
+  'invisyne · dynamic data flow',
+];
+
+const lerp=(a,b,t)=>a+(b-a)*t;
+const clamp=(v,lo,hi)=>v<lo?lo:v>hi?hi:v;
+const smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
+const mix=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
+const bez=(p,a,b,c,d)=>{const m=1-p;return m*m*m*a+3*m*m*p*b+3*m*p*p*c+p*p*p*d;};
+const hash=n=>{const s=Math.sin(n)*43758.5453;return s-Math.floor(s);};
+
+const canvas=document.getElementById('stage');
+const ctx=canvas.getContext('2d',{alpha:true});
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(TRANSPARENT) document.documentElement.classList.add('dm-transparent');
+if(LIGHT) document.documentElement.classList.add('dm-light');
+
+// ── per-particle constants ──────────────────────────────────────────────────
+const curve=new Uint8Array(N), cParam=new Float32Array(N);
+const r1=new Float32Array(N), r2=new Float32Array(N), r3=new Float32Array(N);
+const role=new Uint8Array(N), bar=new Uint8Array(N);
+const src=new Uint8Array(N), tgt=new Uint8Array(N);
+const logoLX=new Float32Array(N), logoLY=new Float32Array(N);
+const BARS=11, SRC=3, TGT=4, perCurve=Math.floor(N/3);
+for(let i=0;i<N;i++){
+  curve[i]=i%3; cParam[i]=Math.floor(i/3)/perCurve;
+  r1[i]=Math.random(); r2[i]=Math.random(); r3[i]=Math.random();
+  bar[i]=i%BARS; src[i]=(r1[i]*SRC)|0; tgt[i]=(r2[i]*TGT)|0;
+  role[i]= r1[i]<0.09 ? 2 : r1[i]<0.31 ? 1 : 0;
+}
+
+// ── live + target buffers ──────────────────────────────────────────────────
+const px=new Float32Array(N), py=new Float32Array(N);
+const pr=new Float32Array(N), pg=new Float32Array(N), pb=new Float32Array(N);
+const psz=new Float32Array(N), pa=new Float32Array(N);
+const tx=new Float32Array(N), ty=new Float32Array(N);
+const tcr=new Float32Array(N), tcg=new Float32Array(N), tcb=new Float32Array(N);
+const tsz=new Float32Array(N), ta=new Float32Array(N);
+const A=mkBuf(), B=mkBuf();
+function mkBuf(){return {x:new Float32Array(N),y:new Float32Array(N),r:new Float32Array(N),
+  g:new Float32Array(N),b:new Float32Array(N),s:new Float32Array(N),a:new Float32Array(N)};}
+
+let inited=false;
+let W=0,H=0,dpr=1, ml=0,mr=0,mtop=0,mbot=0,plotW=0,plotH=0,midY=0;
+const ptr={x:-9999,y:-9999,active:false};
+
+function resize(){
+  const r=canvas.getBoundingClientRect();
+  dpr=Math.min(devicePixelRatio||1,2);
+  W=Math.max(1,r.width); H=Math.max(1,r.height);
+  canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ml=W*0.1; mr=W*0.9; mtop=H*((EMBED && !BG)?0.37:0.2); mbot=H*0.92;
+  plotW=mr-ml; plotH=mbot-mtop; midY=(mtop+mbot)/2;
+  inited=false;
+}
+
+// ── invisyne signet — rasterise the fill once, sample interior points ────────
+const D_A="M4.43164 0.42324C8.20257 -0.819275 10.973 0.932784 12.9349 2.34544C13.6546 2.86368 14.4001 3.62755 15.0624 4.37128C15.7575 5.15177 16.4911 6.06019 17.1968 6.97594C18.6088 8.80826 19.9817 10.7692 20.8212 12.0259L20.8574 12.0806L20.8906 12.1354V12.1364L20.8916 12.1373C20.892 12.138 20.8929 12.1392 20.8936 12.1403C20.8951 12.1429 20.8974 12.1471 20.9004 12.152C20.9066 12.1623 20.9158 12.1779 20.9278 12.198C20.9519 12.2382 20.9876 12.2979 21.0343 12.3759C21.1281 12.5325 21.2663 12.7636 21.444 13.0613C21.7995 13.657 22.314 14.5209 22.9497 15.5946C24.221 17.7418 25.979 20.7307 27.9263 24.0968C30.7659 29.0053 33.8534 34.3878 37.156 38.5603C38.8016 40.6393 40.416 42.3052 41.9762 43.4342C43.5352 44.5624 44.8773 45.0387 46.0425 45.0387C46.8404 45.0387 47.7853 44.7044 48.9434 43.7373C50.1173 42.7571 51.3479 41.2565 52.6353 39.2623C55.2197 35.2591 57.6717 29.854 60.2361 24.1848C62.7476 18.6327 65.3724 12.8161 68.2212 8.40341C69.6501 6.19002 71.2248 4.18351 72.9905 2.70916C74.7721 1.22163 76.902 0.152411 79.3565 0.152411C82.5367 0.15256 85.2978 1.90464 87.5576 4.12881C89.8493 6.38442 91.9563 9.44541 93.8639 12.7973C97.6869 19.5147 101.007 27.9376 103.534 34.8958L98.4514 36.7417C95.94 29.8252 92.7477 21.7665 89.165 15.4714C87.3698 12.3171 85.5501 9.73897 83.765 7.98201C81.9482 6.19391 80.4817 5.55937 79.3565 5.55922C78.5586 5.55922 77.6137 5.89257 76.4556 6.85959C75.2815 7.83991 74.0504 9.34098 72.7627 11.3356C70.1783 15.3389 67.7263 20.7439 65.1619 26.4131C62.6505 31.9651 60.0265 37.7818 57.1778 42.1945C55.749 44.4077 54.1741 46.4135 52.4085 47.8878C50.6268 49.3754 48.4971 50.4445 46.0425 50.4445C43.3619 50.4445 40.926 49.3483 38.8064 47.8144C36.6878 46.2813 34.7222 44.1947 32.9176 41.9149C29.3199 37.3696 26.0251 31.6064 23.2469 26.8042C21.3108 23.4573 19.5622 20.4845 18.2977 18.3488C17.6656 17.2811 17.1544 16.423 16.8018 15.8321C16.6255 15.5368 16.4885 15.308 16.396 15.1536C16.3499 15.0766 16.3149 15.0178 16.2914 14.9786C15.5011 13.798 14.218 11.9675 12.9144 10.2758C12.2528 9.41718 11.6048 8.61795 11.0254 7.96735C10.4134 7.28014 9.99124 6.88858 9.77587 6.73346C8.87248 6.08296 8.24775 5.71159 7.69137 5.53086C7.23169 5.38155 6.76889 5.34543 6.1231 5.55824L4.43164 0.42324Z";
+const D_B="M64.3929 0.154541C66.8472 0.154632 68.9764 1.22389 70.7579 2.71129C72.5237 4.18564 74.0993 6.19215 75.5282 8.40554C78.3769 12.8182 81.0009 18.635 83.5123 24.187C86.0767 29.8562 88.5287 35.2612 91.1131 39.2644C92.4007 41.2589 93.632 42.7602 94.806 43.7404C95.9638 44.7071 96.9082 45.0407 97.7059 45.0408C98.3542 45.0408 98.8997 44.7938 99.2204 44.1169C99.6358 43.2397 99.9874 41.0298 98.3434 36.4046L103.437 34.5938C105.256 39.7093 105.437 43.6222 104.106 46.4321C102.68 49.442 99.9012 50.4466 97.7059 50.4466C95.2516 50.4466 93.1225 49.3774 91.3409 47.8899C89.5752 46.4155 87.9995 44.41 86.5706 42.1966C83.7219 37.7839 81.098 31.9673 78.5865 26.4152C76.0221 20.746 73.5701 15.341 70.9857 11.3377C69.6981 9.34311 68.467 7.84204 67.2929 6.86172C66.1349 5.89492 65.1907 5.56143 64.3929 5.56135C63.5951 5.56135 62.6502 5.89468 61.492 6.86172C60.318 7.84204 59.0868 9.34313 57.7992 11.3377C55.2148 15.341 52.7628 20.746 50.1984 26.4152C47.6869 31.9672 45.063 37.784 42.2143 42.1966C40.7855 44.4099 39.2106 46.4156 37.445 47.8899C35.6633 49.3775 33.5335 50.4466 31.079 50.4466C26.747 50.4466 22.8157 47.8351 19.5624 44.6429C16.2378 41.3806 13.185 37.0831 10.5928 32.8095C7.98799 28.5151 5.78232 24.1344 4.17403 20.629C2.59944 17.1971 1.51209 14.419 1.23207 13.3753C0.876264 12.0491 0.0122196 9.44236 0.000137205 7.10713C-0.00629105 5.86317 0.211341 4.4163 1.0375 3.09749C1.89873 1.72272 3.24004 0.775985 4.93666 0.266979L6.49026 5.445C5.84923 5.6373 5.68078 5.86963 5.61911 5.96808C5.52241 6.12261 5.40371 6.44347 5.40694 7.07877C5.41431 8.50349 5.9527 10.1054 6.45408 11.9742C6.60266 12.528 7.50853 14.9317 9.08807 18.3744C10.6341 21.744 12.7447 25.9319 15.2155 30.0054C17.6988 34.0995 20.4814 37.9699 23.3491 40.7838C26.2882 43.6676 28.9062 45.0408 31.079 45.0408C31.8769 45.0408 32.8218 44.7074 33.9799 43.7404C35.1539 42.7602 36.3842 41.2588 37.6718 39.2644C40.2562 35.2612 42.7082 29.8561 45.2726 24.187C47.7841 18.6348 50.4089 12.8183 53.2577 8.40554C54.6866 6.19215 56.2612 4.18564 58.027 2.71129C59.8086 1.22374 61.9385 0.154541 64.3929 0.154541Z";
+const D_C="M34.4019 34.7579C35.3027 36.0967 36.22 37.3776 37.1561 38.5603C38.8017 40.6393 40.4161 42.3052 41.9763 43.4342C42.1876 43.5872 42.3956 43.7272 42.5991 43.8566L40.014 48.6162C39.601 48.3667 39.1984 48.098 38.8065 47.8144C36.6879 46.2813 34.7223 44.1947 32.9177 41.9149C32.4458 41.3187 31.9796 40.7011 31.5186 40.0679L34.4019 34.7579Z";
+function initLogo(){
+  const SC=3, w=105, h=51, ww=w*SC, hh=h*SC;
+  const off=document.createElement('canvas'); off.width=ww; off.height=hh;
+  const o=off.getContext('2d'); o.scale(SC,SC); o.fillStyle='#fff';
+  o.fill(new Path2D(D_A)); o.fill(new Path2D(D_B)); o.fill(new Path2D(D_C));
+  const data=o.getImageData(0,0,ww,hh).data, filled=[];
+  for(let y=0;y<hh;y++) for(let x=0;x<ww;x++){ if(data[(y*ww+x)*4+3]>128) filled.push(x/ww, y/hh); }
+  const m=filled.length/2 || 1;
+  for(let i=0;i<N;i++){ const k=((Math.random()*m)|0)*2; logoLX[i]=filled[k]||0.5; logoLY[i]=filled[k+1]||0.5; }
+}
+initLogo();
+
+// ── shared scene math ───────────────────────────────────────────────────────
+// Scene 3
+const SIGMID = () => mtop + plotH*0.32;
+const LIM = () => plotH*0.17;
+function limitVal(p,t){
+  const sc=(t*0.13)%1;
+  const wob=-plotH*0.085*Math.sin(p*5*PI+t*1.1) - plotH*0.11*Math.sin(p*2*PI+t*0.45);
+  const jitter=Math.sin(p*55*PI + t*8)*plotH*0.013;            // distortion
+  const spike=Math.exp(-Math.pow((p-sc)*10,2))*plotH*0.32;     // sharp moving spike (up)
+  return SIGMID()+wob+jitter-spike;
+}
+function exceeds(p,t){ const y=limitVal(p,t), m=SIGMID(), l=LIM(); return y<m-l||y>m+l; }
+// Scene 4
+const split = () => ml + plotW*0.58;
+function sigCenter(p,t){ const amp=plotH*0.15;
+  return midY - amp*(Math.sin(p*5*PI + t*1.1) + 0.32*Math.sin(p*11*PI - t*1.8)); }
+function predCenter(b,q,t){ const vEnd=sigCenter(1,t);
+  if(b===0) return vEnd - q*plotH*0.42*(0.80+0.20*Math.sin(t*0.7)) - Math.sin(q*6+t*3)*plotH*0.012;
+  if(b===1) return vEnd - Math.sin(q*3*PI+t*1.4)*plotH*0.05 + q*plotH*0.02;
+  return vEnd + q*plotH*0.22 + Math.sin(q*4+t*2)*plotH*0.012; }
+const thresholdY = () => midY - plotH*0.25;
+function alarmCrossQ(t){ const th=thresholdY();
+  for(let q=0;q<=1;q+=0.01){ if(predCenter(0,q,t)<=th) return q; } return -1; }
+// Scene 5 — table layout
+const TCOLS=6, TROWS=12;
+function cellVal(col,row){ return 0.32 + 0.6*hash(col*13.1+row*7.7+1.3); }
+
+function sceneWrite(ph,i,t,O){
+  let x,y,col,sz,al;
+  if(ph===0){                                   // ── Oszilloskop: winder (torque/rpm/speed)
+    const cv=curve[i], p=cParam[i]; x=ml+p*plotW;
+    const base=midY+(cv-1)*plotH*0.24;
+    const slow=Math.sin(t*0.4);                  // reel build-up driver
+    const trend = cv===0 ? plotH*0.012*Math.sin(t*0.8)   // line speed ~ flat
+                 : cv===1 ? -plotH*0.06*slow             // rpm falls as reel grows
+                 :          plotH*0.06*slow;             // torque rises (inverse of rpm)
+    const amp = plotH*(cv===0?0.05:cv===1?0.085:0.095);
+    const w =Math.sin(p*(6+cv*2)*PI + t*(0.96+cv*0.14));  // ~20% faster, scrolls r→l
+    const w2=0.32*Math.sin(p*15*PI + t*(1.26+cv*0.12));
+    const noise=(r2[i]-0.5)*plotH*0.045*Math.sin(t*1.08+r1[i]*30);
+    y=base+trend-amp*(w+w2)+noise;
+    const sweep=1-((t*0.17)%1), near=1-clamp(Math.abs(p-sweep)/0.12,0,1);
+    col=mix(CURVE[cv],HL,near*0.6); sz=1.3+near*2; al=0.5+near*0.4;
+  } else if(ph===1){                            // ── Dashboard (static)
+    if(role[i]===2){
+      if(r2[i]<0.5){ x=ml+r3[i]*plotW; y=mbot; } else { x=ml; y=mtop+r3[i]*plotH; }
+      col=C.ink; sz=1.1; al=0.5;
+    } else if(role[i]===1){
+      const p=r3[i]; x=ml+p*plotW;
+      const v=0.5+0.30*Math.sin(p*5+1.3)+0.12*Math.sin(p*13+0.7);
+      y=mbot-v*plotH; col=mix(C.violetSoft,HL,0.25); sz=1.8; al=0.85;
+    } else {
+      const b=bar[i], bw=(plotW/BARS)*0.62, bx0=ml+(b+0.5)*(plotW/BARS)-bw/2;
+      const h=0.30+0.55*(0.5+0.5*Math.sin(b*1.7+0.5)), fill=r2[i];
+      x=bx0+r1[i]*bw; y=mbot-fill*h*plotH;
+      col=mix(C.blue,C.teal,b/(BARS-1)); sz=1.5; al=0.7*(fill<=h?1:0.06);
+    }
+  } else if(ph===2){                            // ── Sankey
+    const s=src[i],d=tgt[i], leftX=ml+plotW*0.06, rightX=ml+plotW*0.94;
+    const ys=mtop+plotH*(0.2+s*0.3), yt=mtop+plotH*((d+0.5)/TGT);
+    const p=(cParam[i]+t*0.11+r3[i])%1, midX=(leftX+rightX)/2;
+    x=bez(p,leftX,midX,midX,rightX);
+    const thick=plotH*0.05, off=(r1[i]-0.5)*thick*(0.5+0.5*Math.sin(p*PI));
+    y=bez(p,ys,ys,yt,yt)+off;
+    const glow=Math.max(1-p/0.06,1-(1-p)/0.06);
+    col=mix(CURVE[s],HL,clamp(glow,0,1)*0.7); sz=1.4; al=0.55+clamp(glow,0,1)*0.35;
+  } else if(ph===3){                            // ── Limit monitoring + binary alarm
+    const m=SIGMID(), l=LIM(), lowY=mbot-plotH*0.10, highY=mbot-plotH*0.21;
+    if(r1[i]<0.58){                             // the signal
+      const p=cParam[i]; x=ml+p*plotW; y=limitVal(p,t)+(r2[i]-0.5)*plotH*0.01;
+      if(y<m-l||y>m+l){ col=mix(C.warn,C.bad,0.6+0.4*Math.sin(t*6+p*20)); sz=2.1; al=0.95; }
+      else { col=mix(C.blueSoft,C.blue,p); sz=1.4; al=0.8; }
+    } else if(r1[i]<0.68){                       // limit clouds
+      const up=r2[i]<0.5; x=ml+r3[i]*plotW; y=m+(up?-l:l); col=C.ink; sz=1.0; al=0.4;
+    } else {                                     // binary alarm signal (HIGH on event)
+      const p=cParam[i]; x=ml+p*plotW; const on=exceeds(p,t);
+      y=on?highY:lowY;
+      if(on){ col=C.bad; sz=1.9; al=0.95; } else { col=C.teal; sz=1.1; al=0.45; }
+    }
+  } else if(ph===4){                            // ── Prediction (signal flow)
+    const sx=split();
+    if(r1[i]<0.30){
+      const p=r3[i]; x=ml+p*(sx-ml); y=sigCenter(p,t)+(r2[i]-0.5)*plotH*0.02;
+      col=mix(C.blueSoft,HL,p*0.55); sz=1.7; al=0.85;
+    } else if(r1[i]<0.68){
+      const cx=cParam[i]; x=ml+cx*plotW; let center,band;
+      if(x<sx){ center=sigCenter((x-ml)/(sx-ml),t); band=plotH*0.05; }
+      else { const q=(x-sx)/(mr-sx); center=predCenter(1,q,t); band=plotH*(0.05+0.55*q); }
+      y=center+(r2[i]-0.5)*2*band; col=mix(C.blueSoft,C.violet,cx); sz=1.1; al=0.36;
+    } else {
+      const b=(r2[i]*3)|0, q=r3[i]; x=sx+q*(mr-sx);
+      y=predCenter(b,q,t)+(r1[i]-0.84)*plotH*0.02;
+      if(b===0){ const alarm=y<=thresholdY();
+        col=alarm?mix(C.orange,C.bad,0.5+0.5*Math.sin(t*6)):C.orange; sz=alarm?1.9:1.5; al=alarm?0.95:0.7; }
+      else if(b===1){ col=C.blue; sz=1.5; al=0.75; }
+      else { col=C.teal; sz=1.5; al=0.7; }
+    }
+  } else if(ph===5){                            // ── Data table (fixed)
+    const headerH=plotH*0.10, rowH=(plotH-headerH)/TROWS, colW=plotW/TCOLS;
+    const cell=i%(TCOLS*TROWS), cc=cell%TCOLS, rr=(cell/TCOLS)|0;
+    const cx0=ml+cc*colW, cy=mtop+headerH+rr*rowH+rowH*0.5;
+    const v=cellVal(cc,rr), barLen=(colW-16)*v;
+    x=cx0+8+r3[i]*barLen; y=cy+(r2[i]-0.5)*rowH*0.42;
+    const last=cc===TCOLS-1;
+    col= last ? (v>0.7?C.ok:v>0.5?C.warn:C.bad) : mix(C.blue,C.teal,cc/(TCOLS-1));
+    sz=1.3; al=0.7;
+  } else {                                      // ── invisyne logo flow
+    const maxW=plotW*0.74, maxH=plotH*0.72, sc=Math.min(maxW/105,maxH/51);
+    const lw=105*sc, lh=51*sc, ox=(ml+mr)/2-lw/2, oy=midY-lh/2;
+    const flow=0.5+0.5*Math.sin(logoLX[i]*4 - t*1.6 + logoLY[i]*2);  // energy sweep
+    x=ox+logoLX[i]*lw + Math.cos(t*1.5+logoLX[i]*22)*plotH*0.004;
+    y=oy+logoLY[i]*lh + Math.sin(t*1.7+logoLY[i]*26)*plotH*0.004;
+    col=mix(mix(C.blue,C.violet,logoLX[i]),HL,flow*0.5);
+    sz=1.3+flow*1.2; al=0.5+flow*0.45;
+  }
+  O.x[i]=x; O.y[i]=y; O.r[i]=col[0]; O.g[i]=col[1]; O.b[i]=col[2]; O.s[i]=sz; O.a[i]=al;
+}
+function fillScene(ph,t,O){ for(let i=0;i<N;i++) sceneWrite(ph,i,t,O); }
+
+// ── overlays ──────────────────────────────────────────────────────────────────
+function drawEvent(p,t,fade){
+  const x=ml+p*plotW, y=limitVal(p,t), blink=0.6+0.4*Math.sin(t*7+p*15);
+  ctx.globalAlpha=blink*fade; ctx.lineWidth=1.5;
+  ctx.strokeStyle=`rgb(${C.bad[0]},${C.bad[1]},${C.bad[2]})`;
+  ctx.beginPath(); ctx.arc(x,y,7,0,PI*2); ctx.stroke();
+  ctx.fillStyle=`rgb(${C.bad[0]},${C.bad[1]},${C.bad[2]})`;
+  ctx.font='bold 13px "Space Grotesk", system-ui, sans-serif'; ctx.fillText('!',x-2,y-10);
+  ctx.globalAlpha=0.75*blink*fade; ctx.font='9px "JetBrains Mono", ui-monospace, monospace';
+  ctx.fillText('EVENT', x+9, y-3);
+}
+function overlay(ph,lt,hold,t){
+  const fade=smooth(Math.min(lt/0.6,(hold-lt)/0.5));
+  ctx.globalCompositeOperation='source-over';
+  if(ph===0){
+    const names=['LINE SPEED · m/min','RPM · 1/min','TORQUE · Nm'];
+    ctx.font='11px "JetBrains Mono", ui-monospace, monospace'; ctx.globalAlpha=0.85*fade;
+    const slow=Math.sin(t*0.4);
+    for(let cv=0;cv<3;cv++){ const base=midY+(cv-1)*plotH*0.24;
+      const trend=cv===0?0:cv===1?-plotH*0.06*slow:plotH*0.06*slow;
+      const co=CURVE[cv]; ctx.fillStyle=`rgb(${co[0]},${co[1]},${co[2]})`;
+      ctx.fillText(names[cv], ml+6, base+trend-plotH*0.10); }
+    ctx.globalAlpha=0.6*fade; ctx.fillStyle=T_NEUTRAL;
+    ctx.fillText('WINDER · PAPER MILL', mr-150, mtop+14);
+  } else if(ph===1){
+    ctx.globalAlpha=0.5*fade; ctx.strokeStyle=T_AXIS; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(ml,mtop); ctx.lineTo(ml,mbot); ctx.lineTo(mr,mbot); ctx.stroke();
+  } else if(ph===3){
+    const m=SIGMID(), l=LIM(), lowY=mbot-plotH*0.10, highY=mbot-plotH*0.21;
+    ctx.setLineDash([4,5]); ctx.lineWidth=1; ctx.globalAlpha=0.55*fade;
+    ctx.strokeStyle=`rgba(${C.warn[0]},${C.warn[1]},${C.warn[2]},0.75)`;
+    ctx.beginPath(); ctx.moveTo(ml,m-l); ctx.lineTo(mr,m-l); ctx.moveTo(ml,m+l); ctx.lineTo(mr,m+l); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha=0.65*fade; ctx.font='10px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillStyle=`rgb(${C.warn[0]},${C.warn[1]},${C.warn[2]})`;
+    ctx.fillText('LIMIT MAX', ml+4, m-l-5); ctx.fillText('LIMIT MIN', ml+4, m+l+12);
+    // binary alarm signal — solid step line, red while HIGH
+    const steps=130; let prevX=ml, prevY=lowY, prevOn=false;
+    ctx.lineWidth=2;
+    for(let s=0;s<=steps;s++){ const p=s/steps, on=exceeds(p,t), x=ml+p*plotW, y=on?highY:lowY;
+      ctx.globalAlpha=(on?0.95:0.5)*fade;
+      ctx.strokeStyle= on?`rgb(${C.bad[0]},${C.bad[1]},${C.bad[2]})`:`rgba(${C.teal[0]},${C.teal[1]},${C.teal[2]},0.8)`;
+      ctx.beginPath(); ctx.moveTo(prevX,prevY); if(y!==prevY) ctx.lineTo(prevX,y); ctx.lineTo(x,y); ctx.stroke();
+      prevX=x; prevY=y; prevOn=on; }
+    ctx.globalAlpha=0.7*fade; ctx.fillStyle=T_NEUTRAL;
+    ctx.font='9px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillText('ALARM SIGNAL', ml+4, lowY+13); ctx.fillText('HIGH', mr-30, highY-4); ctx.fillText('LOW', mr-30, lowY+11);
+    // EVENT markers at every exceedance peak
+    let inEx=false, exP=0, exDev=0;
+    for(let s=0;s<=steps;s++){ const p=s/steps, y=limitVal(p,t);
+      const dev=y<m-l?(m-l)-y:y>m+l?y-(m+l):0;
+      if(dev>0){ if(!inEx){inEx=true;exP=p;exDev=dev;} else if(dev>exDev){exDev=dev;exP=p;} }
+      else if(inEx){ drawEvent(exP,t,fade); inEx=false; } }
+    if(inEx) drawEvent(exP,t,fade);
+  } else if(ph===4){
+    const sx=split(), th=thresholdY();
+    ctx.globalAlpha=0.5*fade; ctx.lineWidth=1; ctx.setLineDash([4,5]);
+    ctx.strokeStyle='rgba(120,132,170,0.6)'; ctx.beginPath(); ctx.moveTo(sx,mtop); ctx.lineTo(sx,mbot); ctx.stroke();
+    ctx.strokeStyle=`rgba(${C.warn[0]},${C.warn[1]},${C.warn[2]},0.7)`; ctx.beginPath(); ctx.moveTo(ml,th); ctx.lineTo(mr,th); ctx.stroke();
+    ctx.setLineDash([]); ctx.font='11px "JetBrains Mono", ui-monospace, monospace'; ctx.globalAlpha=0.75*fade;
+    ctx.fillStyle=T_NEUTRAL; ctx.fillText('NOW', sx+6, mbot-6);
+    ctx.fillStyle=`rgb(${C.warn[0]},${C.warn[1]},${C.warn[2]})`; ctx.fillText('ALARM THRESHOLD', ml+4, th-6);
+    ctx.globalAlpha=0.85*fade;
+    ctx.fillStyle=`rgb(${C.orange[0]},${C.orange[1]},${C.orange[2]})`; ctx.fillText('PREDICTION A ↑', mr-104, predCenter(0,1,t));
+    ctx.fillStyle=`rgb(${C.blue[0]},${C.blue[1]},${C.blue[2]})`; ctx.fillText('PREDICTION B →', mr-104, predCenter(1,1,t));
+    ctx.fillStyle=`rgb(${C.teal[0]},${C.teal[1]},${C.teal[2]})`; ctx.fillText('PREDICTION C ↓', mr-104, predCenter(2,1,t)+4);
+    const q=alarmCrossQ(t);
+    if(q>=0){ const ax=sx+q*(mr-sx), blink=0.5+0.5*Math.sin(t*7);
+      ctx.globalAlpha=blink*fade; ctx.fillStyle=`rgb(${C.bad[0]},${C.bad[1]},${C.bad[2]})`;
+      ctx.font='bold 18px "Space Grotesk", system-ui, sans-serif'; ctx.fillText('!',ax-3,th-10);
+      ctx.strokeStyle=`rgba(${C.bad[0]},${C.bad[1]},${C.bad[2]},${0.8*blink})`; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(ax,th,8,0,PI*2); ctx.stroke(); }
+  } else if(ph===5){
+    const headerH=plotH*0.10, rowH=(plotH-headerH)/TROWS, colW=plotW/TCOLS;
+    const heads=['TORQUE','RPM','SPEED','TEMP','VIBR','STATE'];
+    ctx.globalAlpha=0.6*fade; ctx.strokeStyle=T_GRID; ctx.lineWidth=1;
+    for(let r=0;r<=TROWS;r++){ const y=mtop+headerH+r*rowH; ctx.beginPath(); ctx.moveTo(ml,y); ctx.lineTo(mr,y); ctx.stroke(); }
+    ctx.strokeStyle=`rgba(${C.blue[0]},${C.blue[1]},${C.blue[2]},0.7)`; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(ml,mtop+headerH); ctx.lineTo(mr,mtop+headerH); ctx.stroke();
+    ctx.globalAlpha=0.9*fade; ctx.font='11px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillStyle=T_HEAD;
+    for(let c=0;c<TCOLS;c++) ctx.fillText(heads[c], ml+c*colW+8, mtop+headerH*0.62);
+  }
+  if(!EMBED){
+    ctx.globalAlpha=0.9; ctx.font='12px "JetBrains Mono", ui-monospace, monospace';
+    ctx.fillStyle=T_CAPTION; ctx.fillText(LABELS[ph].toUpperCase(), ml, mtop-22);
+    if(LOCK<0){ const prog=(t%CYCLE)/CYCLE;
+      ctx.globalAlpha=0.25; ctx.fillStyle='rgba(120,132,170,0.6)'; ctx.fillRect(ml,mtop-14,plotW,2);
+      ctx.globalAlpha=0.9; ctx.fillStyle=`rgb(${C.blue[0]},${C.blue[1]},${C.blue[2]})`;
+      ctx.fillRect(ml,mtop-14,plotW*prog,2); }
+  }
+  ctx.globalAlpha=1;
+}
+
+// ── loop ──────────────────────────────────────────────────────────────────────
+let start=-1, lastPhase=-1, raf=0;
+function frame(now){
+  if(start<0) start=now;
+  const t = reduce ? 6 : (now-start)/1000;
+  let phase, local, tr, hold, segI;
+  if(LOCK>=0){ phase=LOCK; tr=0; local=1.0; hold=999; segI=-1; }
+  else { const ct=t%CYCLE; segI=segAt(ct);
+    phase=SEGMENTS[segI].scene; tr=SEGMENTS[segI].tr; hold=SEGMENTS[segI].hold; local=ct-STARTS[segI]; }
+
+  if(phase!==lastPhase){ lastPhase=phase;
+    if(window.parent!==window) parent.postMessage({source:'dataMorph',scene:phase,cycle:CYCLE},'*'); }
+
+  fillScene(phase,t,A);
+  if(local<tr && !reduce && LOCK<0){
+    const prevScene=SEGMENTS[(segI-1+SEGMENTS.length)%SEGMENTS.length].scene, bl=smooth(local/tr);
+    fillScene(prevScene,t,B);
+    for(let i=0;i<N;i++){
+      tx[i]=lerp(B.x[i],A.x[i],bl); ty[i]=lerp(B.y[i],A.y[i],bl);
+      tcr[i]=lerp(B.r[i],A.r[i],bl); tcg[i]=lerp(B.g[i],A.g[i],bl); tcb[i]=lerp(B.b[i],A.b[i],bl);
+      tsz[i]=lerp(B.s[i],A.s[i],bl); ta[i]=lerp(B.a[i],A.a[i],bl);
+    }
+  } else { tx.set(A.x); ty.set(A.y); tcr.set(A.r); tcg.set(A.g); tcb.set(A.b); tsz.set(A.s); ta.set(A.a); }
+
+  if(!inited){ px.set(tx);py.set(ty);pr.set(tcr);pg.set(tcg);pb.set(tcb);psz.set(tsz);pa.set(ta); inited=true; }
+
+  // fade previous frame — trail that keeps the background transparent if requested
+  if(TRANSPARENT){ ctx.globalCompositeOperation='destination-out'; ctx.fillStyle='rgba(0,0,0,0.30)'; }
+  else { ctx.globalCompositeOperation='source-over'; ctx.fillStyle=BGFILL; }
+  ctx.fillRect(0,0,W,H);
+
+  const paraX=ptr.active?(ptr.x-W/2)*0.01:0, paraY=ptr.active?(ptr.y-H/2)*0.01:0;
+  ctx.globalCompositeOperation=PCOMP;
+  const k=reduce?1:0.14;
+  for(let i=0;i<N;i++){
+    px[i]+=(tx[i]-px[i])*k; py[i]+=(ty[i]-py[i])*k;
+    pr[i]+=(tcr[i]-pr[i])*0.1; pg[i]+=(tcg[i]-pg[i])*0.1; pb[i]+=(tcb[i]-pb[i])*0.1;
+    psz[i]+=(tsz[i]-psz[i])*0.2; pa[i]+=(ta[i]-pa[i])*0.2;
+    let dx=px[i]+paraX, dy=py[i]+paraY;
+    if(ptr.active){ const ox=dx-ptr.x, oy=dy-ptr.y, d2=ox*ox+oy*oy;
+      if(d2<9000&&d2>1){ const f=(9000-d2)/9000, d=Math.sqrt(d2); dx+=ox/d*f*22; dy+=oy/d*f*22; } }
+    const s=psz[i]; ctx.globalAlpha=clamp(pa[i]*(LIGHT?1.4:1),0,1);
+    ctx.fillStyle=`rgb(${pr[i]|0},${pg[i]|0},${pb[i]|0})`;
+    ctx.fillRect(dx-s/2,dy-s/2,s,s);
+  }
+  ctx.globalAlpha=1;
+  overlay(phase,local,hold,t);
+  if(!reduce) raf=requestAnimationFrame(frame);
+}
+
+canvas.addEventListener('pointermove',e=>{const r=canvas.getBoundingClientRect();
+  ptr.x=e.clientX-r.left; ptr.y=e.clientY-r.top; ptr.active=true;});
+canvas.addEventListener('pointerleave',()=>{ptr.active=false;ptr.x=-9999;ptr.y=-9999;});
+new ResizeObserver(resize).observe(canvas);
+resize();
+raf=requestAnimationFrame(frame);
+</script>
+</body>
+</html>
