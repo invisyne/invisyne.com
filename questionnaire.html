@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industrial Readiness Questionnaire — Invisyne</title>
+  <meta name="description" content="A short yes/no questionnaire to see your industrial machine-intelligence maturity level and get a personal follow-up from Invisyne.">
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preload" href="/assets/fonts/GT-America-Extended-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/GT-America-Extended-Regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="/css/main.css">
+  <script>try{var t=localStorage.getItem('invisyne-theme');if(t!=='dark'&&t!=='light'){if(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches){t='light'}else if(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches){t='dark'}else{var h=new Date().getHours();t=(h<7||h>=19)?'dark':'light'}}document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+</head>
+<body class="subpage" data-page="questionnaire">
+
+  <main>
+
+    <section class="section page-hero">
+      <div class="wrap">
+        <p class="kicker" data-i18n="quest.kicker">Industrial Readiness Questionnaire</p>
+        <h2 class="section-head" data-i18n="quest.head">How ready are you for operational intelligence?</h2>
+        <p class="lede" data-i18n="quest.lede">Answer a few quick yes/no questions — we'll send your result and follow up personally.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="assess" id="questionnaire"><!-- rendered by js/questionnaire.js --></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/js/site-chrome.js"></script>
+  <script src="/js/translations.de.js"></script>
+  <script src="/js/theme.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/site.js"></script>
+  <script src="/js/questionnaire-questions.js"></script>
+  <script src="/js/questionnaire.js"></script>
+</body>
+</html>
