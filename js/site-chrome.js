@@ -71,7 +71,7 @@
           <div class="imprint-cols">
             <address class="imprint-entity">
               <strong><a href="https://www.dr-ecklebe.de" target="_blank" rel="noopener">Dr. Ecklebe GmbH</a></strong>
-              Ullsteinstraße 73, Building 2<br>
+              <span data-i18n="imprint.de.street.berlin">Ullsteinstraße 73, Building 2</span><br>
               <span data-i18n="imprint.de.city.berlin">12109 Berlin, Germany</span><br>
               <a href="tel:+493046777300">+49 (30) 4677773–00</a><br><br>
               Brockenblick 29<br>
