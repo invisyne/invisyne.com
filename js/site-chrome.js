@@ -111,9 +111,16 @@
     </div>
   </footer>`;
 
-  // Inject: header first in <body>, footer last.
+  const COOKIE_BAR = `
+  <div class="cookie-bar" id="cookieBar" role="region" aria-label="Cookie notice">
+    <p data-i18n="cookie.text">We only use technically necessary local storage — for your language and theme preference. No tracking, no third-party cookies.</p>
+    <button type="button" class="btn btn-primary btn-sm" id="cookieAccept" data-i18n="cookie.accept">Accept</button>
+  </div>`;
+
+  // Inject: header first in <body>, footer + cookie bar last.
   document.body.insertAdjacentHTML('afterbegin', HEADER);
   document.body.insertAdjacentHTML('beforeend', FOOTER);
+  document.body.insertAdjacentHTML('beforeend', COOKIE_BAR);
 
   // Active nav item
   const page = document.body.dataset.page;
@@ -140,5 +147,23 @@
         toggle.setAttribute('aria-expanded', 'false');
       })
     );
+  }
+
+  // Cookie notice — no tracking on this site, just an acknowledgement.
+  const COOKIE_KEY = 'invisyne-cookie-consent';
+  const cookieBar = document.getElementById('cookieBar');
+  if (cookieBar) {
+    let accepted = false;
+    try { accepted = localStorage.getItem(COOKIE_KEY) === '1'; } catch (e) { /* ignore */ }
+    if (accepted) {
+      cookieBar.remove();
+    } else {
+      requestAnimationFrame(() => cookieBar.classList.add('show'));
+      document.getElementById('cookieAccept').addEventListener('click', () => {
+        try { localStorage.setItem(COOKIE_KEY, '1'); } catch (e) { /* ignore */ }
+        cookieBar.classList.remove('show');
+        setTimeout(() => cookieBar.remove(), 300);
+      });
+    }
   }
 })();

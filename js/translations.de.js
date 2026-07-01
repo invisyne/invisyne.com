@@ -244,6 +244,10 @@ window.INVISYNE_DE = {
   "imprint.de.city.berlin": "12109 Berlin, Deutschland",
   "imprint.de.city.wernigerode": "38855 Wernigerode OT Reddeber, Deutschland",
   "imprint.us.city": "Atlanta, GA 30328, USA",
-  "foot.imprint": "Impressum"
+  "foot.imprint": "Impressum",
+
+  /* — Cookie notice — */
+  "cookie.text": "Wir verwenden nur technisch notwendigen lokalen Speicher — für deine Sprach- und Theme-Einstellung. Kein Tracking, keine Drittanbieter-Cookies.",
+  "cookie.accept": "Akzeptieren"
 
 };
