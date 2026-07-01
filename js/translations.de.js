@@ -31,6 +31,9 @@ window.INVISYNE_DE = {
   "res.docs": "Dokumentation",
   "res.faq": "FAQ",
   "res.assessment": "Industrielle Selbsteinschätzung",
+  "quest.kicker": "Fragebogen zur Industriereife",
+  "quest.head": "Wie bereit sind Sie für Operational Intelligence?",
+  "quest.lede": "Beantworten Sie ein paar kurze Ja/Nein-Fragen — wir senden Ihnen Ihr Ergebnis und melden uns persönlich.",
 
   /* — Use-case descriptions — */
   "ucd.commission": "Schaffen Sie ab Tag eins eine belastbare Baseline. Weniger Trial-and-Error, geringerer Engineering-Aufwand und ein schnellerer, stabilerer Weg in die Produktion.",
