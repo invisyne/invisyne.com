@@ -71,10 +71,14 @@
           <div class="imprint-cols">
             <address class="imprint-entity">
               <strong><a href="https://www.dr-ecklebe.de" target="_blank" rel="noopener">Dr. Ecklebe GmbH</a></strong>
+              Ullsteinstraße 73, Building 2<br>
+              <span data-i18n="imprint.de.city.berlin">12109 Berlin, Germany</span><br>
+              <a href="tel:+493046777300">+49 (30) 4677773–00</a><br><br>
               Brockenblick 29<br>
-              <span data-i18n="imprint.de.city">38855 Wernigerode OT Reddeber, Germany</span><br>
+              <span data-i18n="imprint.de.city.wernigerode">38855 Wernigerode OT Reddeber, Germany</span><br>
+              <a href="tel:+4939435606 0">+49 (0) 3943 5606 0</a><br><br>
               <span class="imprint-meta">Amtsgericht Stendal · HRB 100778 · VAT&nbsp;DE&nbsp;139575472</span><br>
-              <a href="tel:+4939435606 0">+49 (0) 3943 5606 0</a> · <a href="mailto:mail@dr-ecklebe.de">mail@dr-ecklebe.de</a>
+              <a href="mailto:info@invisyne.com">info@invisyne.com</a>
             </address>
             <address class="imprint-entity">
               <strong><a href="https://www.ecklebeautomation.com" target="_blank" rel="noopener">ECKLEBE Automation Inc.</a></strong>

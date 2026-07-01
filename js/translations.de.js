@@ -241,7 +241,8 @@ window.INVISYNE_DE = {
   /* — Footer / Impressum — */
   "footer.tagline": "Where machine memory becomes operational intelligence.",
   "imprint.title": "Impressum",
-  "imprint.de.city": "38855 Wernigerode OT Reddeber, Deutschland",
+  "imprint.de.city.berlin": "12109 Berlin, Deutschland",
+  "imprint.de.city.wernigerode": "38855 Wernigerode OT Reddeber, Deutschland",
   "imprint.us.city": "Atlanta, GA 30328, USA",
   "foot.imprint": "Impressum"
 
