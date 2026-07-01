@@ -257,6 +257,7 @@ a { color: inherit; }
   border: 1px solid transparent;
   transition: transform 0.2s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
   white-space: nowrap;
+  cursor: pointer;
 }
 .btn:hover { transform: translateY(-2px); }
 .btn-primary {
@@ -872,7 +873,7 @@ a { color: inherit; }
 .assess-status { font-size: 0.95rem; margin-top: 1rem; }
 .assess-status.error { color: var(--warn); }
 .hp-field { position: absolute; left: -9999px; top: -9999px; }
-body[data-page="questionnaire"] .assess { min-height: 320px; }
+.assess { min-height: 320px; }
 
 /* ===========================================
    SPOTLIGHT — sequential box highlight
