@@ -852,6 +852,28 @@ a { color: inherit; }
 .assess-scale span.on { color: var(--on-accent); background: var(--accent); border-color: transparent; }
 
 /* ===========================================
+   QUESTIONNAIRE — LEAD FORM
+   =========================================== */
+.assess-form { display: flex; flex-direction: column; gap: 1rem; max-width: 420px; }
+.assess-field { display: flex; flex-direction: column; gap: 0.4rem; }
+.assess-field label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+.assess-field input {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--tile-bg);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+}
+.assess-field input:focus { outline: none; border-color: var(--accent); }
+.assess-hint { font-size: 0.8rem; color: var(--ink-faint); }
+.assess-hint a { color: var(--ink-dim); text-decoration: underline; }
+.assess-status { font-size: 0.95rem; margin-top: 1rem; }
+.assess-status.error { color: var(--warn); }
+.hp-field { position: absolute; left: -9999px; top: -9999px; }
+
+/* ===========================================
    SPOTLIGHT — sequential box highlight
    (The Invisyne principle · Why Invisyne · Latest)
    Driven by js/spotlight.js, which cycles .is-spot through the boxes.
