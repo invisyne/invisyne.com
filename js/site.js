@@ -1,24 +1,15 @@
-// Site interactions for the one-page site. Pure vanilla JS, no dependencies.
-// The hero canvas is driven by js/cinema/scene-webgl.js; this file drives the content sections.
+// Site interactions for the multipage site. Pure vanilla JS, no dependencies.
 
 (() => {
   'use strict';
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---- Nav reveal + hero-canvas fade on scroll ---- */
+  /* ---- Nav reveal on scroll ---- */
   (() => {
     const nav = document.getElementById('nav');
-    const canvas = document.getElementById('bg');
     const onScroll = () => {
       const vh = window.innerHeight || 1;
       if (nav) nav.classList.toggle('scrolled', window.scrollY > vh * 0.6);
-      if (canvas) {
-        // Kept deliberately subtle even over the hero so the animated signals
-        // never compete with the headline: ~0.4 at the top, easing to a quiet
-        // ambient 0.22 once scrolled past it.
-        const f = Math.min(window.scrollY / vh, 1);
-        canvas.style.opacity = (0.4 - f * 0.18).toFixed(3);
-      }
     };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });

@@ -16,10 +16,8 @@ If a sensitive file is ever committed by mistake, adding it to `.gitignore` only
 
 ## Stack
 
-- HTML/CSS/JS with **no build step**. Libraries are vendored (not bundled) under `js/vendor/`: GSAP + ScrollTrigger, Lenis. No CDN at runtime.
+- HTML/CSS/JS with **no build step**. No CDN at runtime, no vendored JS libraries (the earlier GSAP/ScrollTrigger/Lenis motion layer and canvas background from the v1 single-page site were removed as dead code — v3 has no dependencies).
 - Multipage site (v3): `index.html`, `why.html`, `usecases.html`, `platform.html`, `referenzen.html`, `faq.html`, `latest.html`, `assessment.html`, `data-morph.html`. Header/footer nav is shared via `js/site-chrome.js` (injected on every page) — edit nav links there, not per-page.
-- Background is a hand-rolled 2D-canvas animation (`js/scene.js`): a drifting node network plus a centered multi-line signal chart with threshold "incident" markers and an abstract asset-lifecycle ribbon. It self-handles `prefers-reduced-motion` (static frame).
-- Motion layer (`js/cinema/`): GSAP/ScrollTrigger scroll-reveals (staggered headlines, glass float-in) plus Lenis snappy smooth-scroll, gated behind `prefers-reduced-motion`. Brand tokens read from CSS in `js/cinema/config.js`.
 - i18n (EN/DE): `js/i18n.js` switches text via `data-i18n` attributes; English is the DOM source of truth, German strings live in `js/translations.de.js` (`window.INVISYNE_DE`). No build step, no routing — same URL, swapped text.
 - Dark/light theme: `js/theme.js` toggles `data-theme` on `<html>`, persisted in `localStorage`. CSS tokens for light mode live under `html[data-theme="light"]` in `css/main.css`. Inline script in each page's `<head>` sets the theme before first paint to avoid a flash.
 - GT America Extended font, self-hosted as woff2 in `assets/fonts/`
