@@ -17,7 +17,7 @@ If a sensitive file is ever committed by mistake, adding it to `.gitignore` only
 ## Stack
 
 - HTML/CSS/JS with **no build step**. No CDN at runtime, no vendored JS libraries (the earlier GSAP/ScrollTrigger/Lenis motion layer and canvas background from the v1 single-page site were removed as dead code — v3 has no dependencies).
-- Multipage site (v3): `index.html`, `why.html`, `usecases.html`, `platform.html`, `referenzen.html`, `faq.html`, `latest.html`, `assessment.html`, `data-morph.html`. Header/footer nav is shared via `js/site-chrome.js` (injected on every page) — edit nav links there, not per-page.
+- Multipage site (v3): `index.html`, `why.html`, `usecases.html`, `platform.html`, `referenzen.html`, `faq.html`, `latest.html`, `assessment.html`, `data-morph.html`, `questionnaire.html`. Header/footer nav is shared via `js/site-chrome.js` (injected on every page) — edit nav links there, not per-page. `questionnaire.html` is intentionally **not** linked from nav — reachable only via direct URL.
 - i18n (EN/DE): `js/i18n.js` switches text via `data-i18n` attributes; English is the DOM source of truth, German strings live in `js/translations.de.js` (`window.INVISYNE_DE`). No build step, no routing — same URL, swapped text.
 - Dark/light theme: `js/theme.js` toggles `data-theme` on `<html>`, persisted in `localStorage`. CSS tokens for light mode live under `html[data-theme="light"]` in `css/main.css`. Inline script in each page's `<head>` sets the theme before first paint to avoid a flash.
 - GT America Extended font, self-hosted as woff2 in `assets/fonts/`
@@ -42,3 +42,9 @@ python3 -m http.server 8080
 ## Deployment
 
 Push to `main`. GitHub Pages deploys automatically. Custom domain is set via the `CNAME` file (`invisyne.com`).
+
+## Related repos
+
+- `invisyne-questionnaire-backend` — Cloudflare Worker that `questionnaire.html`/`js/questionnaire.js`
+  posts to (`POST /submit`). No secrets live in this repo for that integration — only the public
+  Worker URL, hardcoded in `js/questionnaire.js`.

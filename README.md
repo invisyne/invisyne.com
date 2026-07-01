@@ -4,7 +4,7 @@ Public website for [Invisyne](https://invisyne.com) — served via GitHub Pages.
 
 ## Status
 
-Live multipage site (v3): home, Why Invisyne, Use Cases, Platform, Customer Stories, FAQ, Latest, and an Industrial Self-Assessment tool. Available in English and German (`js/i18n.js`), dark and light themes (see below).
+Live multipage site (v3): home, Why Invisyne, Use Cases, Platform, Customer Stories, FAQ, Latest, an Industrial Self-Assessment tool, and an Industrial Readiness Questionnaire (`questionnaire.html`, unlinked from nav — direct-link only, distribution TBD). Available in English and German (`js/i18n.js`), dark and light themes (see below).
 
 ## Local development
 
