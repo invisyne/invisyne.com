@@ -6,7 +6,7 @@ window.INVISYNE_QUESTIONNAIRE_QUESTIONS = [
   { en: 'Can you monitor your assets live from anywhere?', de: 'Können Sie Ihre Anlagen live von überall überwachen?' },
   { en: 'Can you compare machines with each other?', de: 'Können Sie Maschinen miteinander vergleichen?' },
   { en: 'Do you have a baseline for each machine?', de: 'Haben Sie eine Baseline jeder Maschine?' },
-  { en: 'Do you know each machine\'s last known-good state?', de: 'Kennen Sie den letzten bekannten Gutzustand jeder Maschine?' },
+  { en: 'Do you know each machine’s last known-good state?', de: 'Kennen Sie den letzten bekannten Gutzustand jeder Maschine?' },
   { en: 'Are root causes provable within minutes?', de: 'Sind Ursachen innerhalb weniger Minuten nachweisbar?' },
   { en: 'Does machine knowledge stay with the company?', de: 'Bleibt Maschinenwissen beim Unternehmen?' },
   { en: 'Is your service reproducible?', de: 'Ist Ihr Service reproduzierbar?' },
