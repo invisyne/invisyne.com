@@ -103,10 +103,10 @@
         '<p class="assess-progress">' + T.score[l] + ' ' + s + ' ' + T.outof[l] + ' ' + Q.length + '</p>' +
         '<form class="assess-form" id="leadForm" style="margin-top:1.8rem">' +
           '<p class="assess-q" style="font-size:1.2rem;margin-bottom:1rem">' + T.formTitle[l] + '</p>' +
-          '<div class="assess-field"><label for="lf-name">' + T.name[l] + '</label><input id="lf-name" name="name" type="text" required maxlength="200"></div>' +
-          '<div class="assess-field"><label for="lf-email">' + T.email[l] + '</label><input id="lf-email" name="email" type="email" required maxlength="200"></div>' +
-          '<div class="assess-field"><label for="lf-company">' + T.company[l] + '</label><input id="lf-company" name="company" type="text" required maxlength="200"></div>' +
-          '<div class="assess-field hp-field" aria-hidden="true"><label for="lf-hp">Company website</label><input id="lf-hp" name="honeypot" type="text" tabindex="-1" autocomplete="off"></div>' +
+          '<div class="assess-field"><label for="lf-name">' + T.name[l] + '<span class="req" aria-hidden="true">*</span></label><input id="lf-name" name="name" type="text" required maxlength="200"></div>' +
+          '<div class="assess-field"><label for="lf-email">' + T.email[l] + '<span class="req" aria-hidden="true">*</span></label><input id="lf-email" name="email" type="email" required maxlength="200"></div>' +
+          '<div class="assess-field"><label for="lf-company">' + T.company[l] + '<span class="req" aria-hidden="true">*</span></label><input id="lf-company" name="company" type="text" required maxlength="200"></div>' +
+          '<div class="assess-field hp-field" aria-hidden="true"><label for="lf-hp">Leave this field empty</label><input id="lf-hp" name="hp_check" type="text" tabindex="-1" autocomplete="off" data-lpignore="true"></div>' +
           '<p class="assess-hint">' + T.privacy[l] + '</p>' +
           '<div class="assess-actions">' +
             '<button class="btn btn-primary" type="submit">' + T.submit[l] + '</button>' +
@@ -133,6 +133,7 @@
         '</div>' +
       '</div>';
     root.querySelector('[data-restart]').addEventListener('click', restart);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function restart() {
@@ -154,7 +155,7 @@
       name: form.name.value.trim(),
       email: form.email.value.trim(),
       company: form.company.value.trim(),
-      honeypot: form.honeypot.value,
+      honeypot: form.hp_check.value,
       lang: l,
       answers: answersLog,
     };

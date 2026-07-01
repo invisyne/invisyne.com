@@ -858,6 +858,7 @@ a { color: inherit; }
 .assess-form { display: flex; flex-direction: column; gap: 1rem; max-width: 420px; }
 .assess-field { display: flex; flex-direction: column; gap: 0.4rem; }
 .assess-field label { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); }
+.assess-field label .req { color: var(--warn); letter-spacing: 0; margin-left: 0.3em; position: relative; top: -2px; }
 .assess-field input {
   font-family: var(--font-body);
   font-size: 1rem;
