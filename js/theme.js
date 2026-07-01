@@ -1,7 +1,9 @@
 // Lightweight Dark/Light theme switch. Mirrors js/i18n.js.
-// Dark is the default. The choice is stored in localStorage and applied by
-// setting data-theme on <html>; CSS tokens under html[data-theme="light"] do
-// the rest. The datamorph iframe is re-pointed at the matching theme. No deps.
+// Initial theme resolves in order: saved choice > OS prefers-color-scheme >
+// local time of day (dark 19:00-07:00) > dark. A manual pick is stored in
+// localStorage and always wins on later visits. Applied by setting data-theme
+// on <html>; CSS tokens under html[data-theme="light"] do the rest. The
+// datamorph iframe is re-pointed at the matching theme. No deps.
 (() => {
   'use strict';
   const STORE_KEY = 'invisyne-theme';
@@ -60,9 +62,25 @@
     });
   }
 
-  // Initial theme: saved choice, else dark.
-  let initial = 'dark';
-  try { initial = localStorage.getItem(STORE_KEY) || 'dark'; } catch (e) { /* ignore */ }
+  function systemTheme() {
+    try {
+      if (window.matchMedia) {
+        if (matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+        if (matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+      }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+
+  function timeOfDayTheme() {
+    const h = new Date().getHours();
+    return (h < 7 || h >= 19) ? 'dark' : 'light';
+  }
+
+  // Initial theme: saved choice, else OS preference, else time of day.
+  let initial;
+  try { initial = localStorage.getItem(STORE_KEY); } catch (e) { /* ignore */ }
+  if (THEMES.indexOf(initial) === -1) initial = systemTheme() || timeOfDayTheme();
   apply(initial);
 
   window.INVISYNE_THEME_API = { setTheme };
