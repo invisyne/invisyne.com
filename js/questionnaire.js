@@ -178,5 +178,9 @@
   }
 
   render();
-  document.addEventListener('i18n:change', render);
+  document.addEventListener('i18n:change', () => {
+    // Don't wipe a partially-filled lead form on a language switch.
+    if (done && !submitted) return;
+    render();
+  });
 })();
