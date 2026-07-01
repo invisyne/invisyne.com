@@ -872,6 +872,7 @@ a { color: inherit; }
 .assess-status { font-size: 0.95rem; margin-top: 1rem; }
 .assess-status.error { color: var(--warn); }
 .hp-field { position: absolute; left: -9999px; top: -9999px; }
+body[data-page="questionnaire"] .assess { min-height: 320px; }
 
 /* ===========================================
    SPOTLIGHT — sequential box highlight
