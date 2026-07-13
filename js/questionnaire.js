@@ -46,6 +46,21 @@
       de: 'Wir haben Ihre Antworten erhalten und melden uns in Kürze mit etwas Passendem zu Ihrem Vorhaben.',
     },
     errorBody: { en: 'Something went wrong. Please try again.', de: 'Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.' },
+    required: { en: 'This field is required.', de: 'Dieses Feld ist erforderlich.' },
+    invalidEmail: { en: 'Please enter a valid email address.', de: 'Bitte eine gültige E-Mail-Adresse eingeben.' },
+    invalidPhone: { en: 'Please enter a valid phone number.', de: 'Bitte eine gültige Telefonnummer eingeben.' },
+  };
+
+  // Mirrors the backend's validate.js — catches obvious garbage before the round
+  // trip, but the Worker re-validates server-side since this can be bypassed.
+  const EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
+  const PHONE_RE = /^[0-9()+\-.\s]{6,25}$/;
+  const isValidEmail = (v) => { const t = v.trim(); return t.length > 0 && t.length <= 254 && EMAIL_RE.test(t); };
+  const isValidPhone = (v) => {
+    const t = v.trim();
+    if (!PHONE_RE.test(t)) return false;
+    const digits = t.replace(/\D/g, '');
+    return digits.length >= 6 && digits.length <= 15;
   };
 
   // ---- State ----
@@ -90,17 +105,25 @@
       '<p class="assess-q">' + esc(DATA.gate ? DATA.gate.q[l] : '') + '</p>' +
       '<div class="assess-opts">' +
         PERSONAS.map((p) =>
-          '<button type="button" class="assess-opt round" data-persona="' + p.id + '">' +
+          '<button type="button" class="assess-opt round' + (persona === p.id ? ' sel' : '') + '" data-persona="' + p.id + '">' +
             '<span class="mark"></span><span>' + esc(p[l]) + '</span>' +
           '</button>'
         ).join('') +
-      '</div>';
+      '</div>' +
+      '<div class="assess-actions assess-next"><button type="button" class="btn btn-primary" data-continue>' + T.cont[l] + '</button></div>';
+
     root.querySelectorAll('[data-persona]').forEach((b) =>
       b.addEventListener('click', () => {
-        setPersona(b.dataset.persona);
-        idx = 0; stage = 'questions'; render();
+        root.querySelectorAll('[data-persona]').forEach((x) => x.classList.remove('sel'));
+        b.classList.add('sel');
+        persona = b.dataset.persona;
       })
     );
+    root.querySelector('[data-continue]').addEventListener('click', () => {
+      if (!persona) return;
+      setPersona(persona);
+      idx = 0; stage = 'questions'; render();
+    });
   }
 
   // ---- Questions ----
@@ -120,7 +143,6 @@
       body = textField(q, l, prev);
     }
 
-    const showContinue = q.type === 'multi' || q.type === 'text';
     const hint = q.hint ? '<p class="assess-hint" style="margin:-1rem 0 1.4rem">' + esc(q.hint[l]) + '</p>' : '';
 
     root.innerHTML =
@@ -128,9 +150,8 @@
       '<div class="assess-bar"><span style="width:' + pct + '%"></span></div>' +
       '<p class="assess-q">' + esc(q.q[l]) + '</p>' +
       hint + body +
-      (showContinue
-        ? '<div class="assess-actions assess-next"><button type="button" class="btn btn-primary" data-continue>' + T.cont[l] + '</button></div>'
-        : '') +
+      '<div class="assess-actions assess-next"><button type="button" class="btn btn-primary" data-continue>' + T.cont[l] + '</button></div>' +
+      '<p class="assess-status" id="q-status"></p>' +
       (idx > 0 || !personaLocked ? backButton(l) : '');
 
     wireQuestion(q, l);
@@ -168,13 +189,20 @@
     if (backEl) backEl.addEventListener('click', goBack);
 
     if (q.type === 'single') {
-      root.querySelectorAll('[data-opt]').forEach((b) =>
+      const opts = root.querySelectorAll('[data-opt]');
+      opts.forEach((b) =>
         b.addEventListener('click', () => {
-          const o = q.options.find((x) => x.id === b.dataset.opt);
-          answers[q.id] = { question: q.q[l], goal: q.goal, type: q.type, answer: o[l], raw: o.id };
-          advance();
+          opts.forEach((x) => x.classList.remove('sel'));
+          b.classList.add('sel');
         })
       );
+      root.querySelector('[data-continue]').addEventListener('click', () => {
+        const picked = root.querySelector('.assess-opt.sel');
+        if (!picked) return;
+        const o = q.options.find((x) => x.id === picked.dataset.opt);
+        answers[q.id] = { question: q.q[l], goal: q.goal, type: q.type, answer: o[l], raw: o.id };
+        advance();
+      });
       return;
     }
 
@@ -196,9 +224,16 @@
 
     if (q.type === 'text') {
       const ta = root.querySelector('[data-text]');
+      const status = root.querySelector('#q-status');
       root.querySelector('[data-continue]').addEventListener('click', () => {
+        status.textContent = ''; status.classList.remove('error');
+        ta.style.borderColor = '';
         const v = ta.value.trim();
-        if (!v && !q.optional) { ta.focus(); ta.style.borderColor = 'var(--warn)'; return; }
+        if (!v && !q.optional) {
+          ta.focus(); ta.style.borderColor = 'var(--warn)';
+          status.textContent = T.required[l]; status.classList.add('error');
+          return;
+        }
         answers[q.id] = { question: q.q[l], goal: q.goal, type: q.type, answer: v, raw: v };
         advance();
       });
@@ -214,7 +249,7 @@
 
   function goBack() {
     if (idx > 0) { idx--; stage = 'questions'; }
-    else if (!personaLocked) { stage = 'gate'; persona = null; }
+    else if (!personaLocked) { stage = 'gate'; }
     render();
   }
 
@@ -231,7 +266,7 @@
     }).join('');
 
     root.innerHTML =
-      '<form class="assess-form" id="leadForm">' +
+      '<form class="assess-form" id="leadForm" novalidate>' +
         '<p class="assess-q" style="font-size:1.2rem;margin-bottom:1rem">' + esc((CONTACT.title || T.formTitle || {})[l] || '') + '</p>' +
         fieldHtml +
         '<div class="assess-field hp-field" aria-hidden="true"><label for="lf-hp">Leave this field empty</label><input id="lf-hp" name="hp_check" type="text" tabindex="-1" autocomplete="off" data-lpignore="true"></div>' +
@@ -276,11 +311,39 @@
     if (btn.disabled) return;
 
     saveContact(form);
+    status.textContent = '';
+    status.classList.remove('error');
+
+    const fields = CONTACT.fields || [];
+    fields.forEach((f) => {
+      const el = form.querySelector('#lf-' + f.id);
+      if (el) el.style.borderColor = '';
+    });
+
+    for (const f of fields) {
+      const el = form.querySelector('#lf-' + f.id);
+      if (el && f.required && !el.value.trim()) {
+        el.focus(); el.style.borderColor = 'var(--warn)';
+        status.textContent = T.required[l]; status.classList.add('error');
+        return;
+      }
+    }
+
+    const emailEl = form.querySelector('#lf-email');
+    if (emailEl && !isValidEmail(emailEl.value)) {
+      emailEl.focus(); emailEl.style.borderColor = 'var(--warn)';
+      status.textContent = T.invalidEmail[l]; status.classList.add('error');
+      return;
+    }
+    const phoneEl = form.querySelector('#lf-phone');
+    if (phoneEl && phoneEl.value.trim() && !isValidPhone(phoneEl.value)) {
+      phoneEl.focus(); phoneEl.style.borderColor = 'var(--warn)';
+      status.textContent = T.invalidPhone[l]; status.classList.add('error');
+      return;
+    }
 
     btn.disabled = true;
     btn.textContent = T.submitting[l];
-    status.textContent = '';
-    status.classList.remove('error');
 
     // answers array in step order, tagged with id + BANT goal for the email.
     const answerList = steps.map((q) => {
