@@ -215,8 +215,13 @@
         const labels = picked.map((id) => q.options.find((x) => x.id === id)[l]);
         const otherEl = root.querySelector('[data-other]');
         const otherText = otherEl ? otherEl.value.trim() : '';
-        if (otherText) labels.push(otherText);
-        answers[q.id] = { question: q.q[l], goal: q.goal, type: q.type, answer: labels.join(', '), raw: picked, otherText };
+        const selected = labels.join(', ');
+        // Own line (not comma-joined into `selected`) so the email shows it as a
+        // clearly separate free-text entry, not just another checked option.
+        const answer = otherText
+          ? (selected ? selected + '\n' + T.other[l] + ': ' + otherText : T.other[l] + ': ' + otherText)
+          : selected;
+        answers[q.id] = { question: q.q[l], goal: q.goal, type: q.type, answer, raw: picked, otherText };
         advance();
       });
       return;
