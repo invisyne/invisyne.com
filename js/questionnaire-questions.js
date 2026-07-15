@@ -97,8 +97,9 @@
         ],
       },
       {
-        id: 'priority', type: 'single', goal: 'need',
-        q: { en: 'Of those, which matters most right now?', de: 'Was davon ist Ihnen aktuell am wichtigsten?' },
+        id: 'priority', type: 'multi', goal: 'need', allowOther: true,
+        q: { en: 'Which of these matter most right now?', de: 'Welche davon sind Ihnen aktuell am wichtigsten?' },
+        hint: { en: 'Select all that apply.', de: 'Mehrfachauswahl möglich.' },
         options: [
           { id: 'visibility', en: 'Seeing our machines live, from anywhere', de: 'Maschinen live sehen, von überall' },
           { id: 'troubleshoot', en: 'Finding root causes faster', de: 'Ursachen schneller finden' },
