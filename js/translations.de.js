@@ -229,12 +229,12 @@ window.INVISYNE_DE = {
   "latest.kicker": "Neuigkeiten",
   "latest.head": "Die Plattform entwickelt sich kontinuierlich weiter.",
   "latest.lede": "Crawler, Hub und Companion werden laufend erweitert. Die neuesten Funktionen finden Sie hier — mit vollständiger Historie im jeweiligen Changelog.",
-  "rel.edge.1": "Backup & Restore für Gerätekonfigurationen — dazu eine Warnung bei abweichender Systemuhr.",
-  "rel.edge.2": "HTTPS-Absicherung aller Systemdienste — eigene Zertifikate und HTTP-Fallback-Modus.",
-  "rel.hub.1": "Einheitliche Darstellung leerer Felder und ein Anzahl-Badge in der Geräteliste.",
-  "rel.hub.2": "Neues Invisyne Design System, systemweites Changelog und Light-/Dark-Mode.",
-  "rel.comp.1": "Backup & Restore für Konfiguration und Messdaten direkt in der App.",
-  "rel.comp.2": "Kompatibilität mit Edge 2.22 — Geräte-Passwort-Authentifizierung für Konfigurationsänderungen.",
+  "rel.edge.1": "Material-Tracking — Werkstücke durchlaufen konfigurierte Stationen, mit CSV-Export pro Run. Cloud-Anbindung neu als Hub Data.",
+  "rel.edge.2": "Backup & Restore für Gerätekonfigurationen — dazu eine Warnung bei abweichender Systemuhr.",
+  "rel.hub.1": "Single Sign-On mit Deepview und Benutzereinladung per E-Mail.",
+  "rel.hub.2": "Einheitliche Darstellung leerer Felder und ein Anzahl-Badge in der Geräteliste.",
+  "rel.comp.1": "Crawler manuell per IP-Adresse oder Hostname hinzufügen — für VLANs, geroutete Subnetze und VPN-Zugriff.",
+  "rel.comp.2": "Backup & Restore für Konfiguration und Messdaten direkt in der App.",
   "rel.link": "Changelog anzeigen ↗",
 
   /* — Final CTA — */
