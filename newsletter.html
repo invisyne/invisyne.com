@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter — Invisyne</title>
+  <meta name="description" content="Subscribe to the Invisyne newsletter: new features, the latest releases, and technical advancements.">
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preload" href="/assets/fonts/GT-America-Extended-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/GT-America-Extended-Regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="/css/main.css">
+  <script>try{var t=localStorage.getItem('invisyne-theme');if(t!=='dark'&&t!=='light'){if(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches){t='light'}else if(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches){t='dark'}else{var h=new Date().getHours();t=(h<7||h>=19)?'dark':'light'}}document.documentElement.setAttribute('data-theme',t)}catch(e){document.documentElement.setAttribute('data-theme','dark')}</script>
+</head>
+<body class="subpage" data-page="resources">
+
+  <main>
+
+    <section class="section page-hero">
+      <div class="wrap">
+        <p class="kicker" data-i18n="nl.kicker">Newsletter</p>
+        <h2 class="section-head" data-i18n="nl.head">Stay up to date.</h2>
+        <p class="lede" data-i18n="nl.lede">New features, the latest releases, and technical advancements in Invisyne — straight to your inbox.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <form class="nl-form" id="nlForm" novalidate>
+          <div class="assess-field">
+            <label for="nl-email" data-i18n="nl.email">Email address</label>
+            <div class="nl-row">
+              <input id="nl-email" name="email" type="email" autocomplete="email" required>
+              <button class="btn btn-primary" type="submit" data-i18n="nl.submit">Subscribe</button>
+            </div>
+          </div>
+          <div class="assess-field hp-field" aria-hidden="true"><label for="nl-hp">Leave this field empty</label><input id="nl-hp" name="hp_check" type="text" tabindex="-1" autocomplete="off"></div>
+          <p class="assess-hint" data-i18n="nl.privacy">We'll send you an email to confirm your subscription. You can unsubscribe at any time. See our <a href="https://www.dr-ecklebe.de/en/privacy-policy" target="_blank" rel="noopener">privacy policy</a>.</p>
+          <p class="assess-status error" id="nlInvalid" hidden data-i18n="nl.invalid">Please enter a valid email address.</p>
+          <p class="assess-status error" id="nlError" hidden data-i18n="nl.error">Something went wrong. Please try again.</p>
+        </form>
+        <div class="nl-done" id="nlDone" hidden>
+          <h3 data-i18n="nl.done.head">Almost there.</h3>
+          <p data-i18n="nl.done.body">We've sent you an email. Please click the link in it to confirm your subscription.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/js/site-chrome.js"></script>
+  <script src="/js/translations.de.js"></script>
+  <script src="/js/theme.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/site.js"></script>
+  <script src="/js/newsletter.js"></script>
+</body>
+</html>

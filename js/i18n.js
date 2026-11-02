@@ -38,10 +38,15 @@
     });
   }
 
-  // Initial language: saved choice, else English.
-  let initial = 'en';
-  try { initial = localStorage.getItem(STORE_KEY) || 'en'; } catch (e) { /* ignore */ }
-  apply(initial);
+  // Initial language: ?lang=de|en (e.g. links from Hub or Brevo), else saved choice, else English.
+  const param = new URLSearchParams(location.search).get('lang');
+  if (param === 'de' || param === 'en') {
+    setLang(param);
+  } else {
+    let initial = 'en';
+    try { initial = localStorage.getItem(STORE_KEY) || 'en'; } catch (e) { /* ignore */ }
+    apply(initial);
+  }
 
   // Expose a tiny helper for other scripts (e.g. the KPI rotator).
   window.INVISYNE_I18N = { setLang, t: (key) => (window.INVISYNE_LANG === 'de' && DE[key]) || null };

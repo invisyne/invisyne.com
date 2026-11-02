@@ -47,6 +47,7 @@
           <a href="https://docs.invisyne.com" target="_blank" rel="noopener" data-i18n="res.docs">Documentation ↗</a>
           <a href="/faq.html" data-i18n="res.faq">FAQ</a>
           <a href="/assessment.html" data-i18n="res.assessment">Industrial Self-Assessment</a>
+          <a href="/newsletter.html" data-i18n="res.newsletter">Newsletter</a>
         </div>
       </div>
 
@@ -98,6 +99,7 @@
           <a href="/latest.html" data-i18n="res.news">News</a>
           <a href="/faq.html" data-i18n="res.faq">FAQ</a>
           <a href="/assessment.html" data-i18n="res.assessment">Industrial Self-Assessment</a>
+          <a href="/newsletter.html" data-i18n="res.newsletter">Newsletter</a>
           <a href="https://docs.invisyne.com" target="_blank" rel="noopener" data-i18n="res.docs">Documentation ↗</a>
         </div>
         <div class="footer-end">
