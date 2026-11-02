@@ -878,6 +878,7 @@ a { color: inherit; }
 
 /* Newsletter signup */
 .nl-form { display: flex; flex-direction: column; gap: 1rem; max-width: 560px; }
+.nl-form[hidden] { display: none; }
 .nl-row { display: flex; gap: 0.8rem; flex-wrap: wrap; }
 .nl-row input { flex: 1 1 260px; min-width: 0; }
 .nl-done h3 { font-family: var(--brand-font-display); font-weight: 500; font-size: 1.4rem; margin-bottom: 0.6rem; }
