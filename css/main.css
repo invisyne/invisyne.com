@@ -1195,6 +1195,8 @@ a { color: inherit; }
   color: var(--ink-dim);
 }
 .footer-links a:hover { color: var(--accent); }
+.footer-social { display: inline-flex; color: var(--ink-dim); }
+.footer-social:hover { color: var(--accent); }
 .footer-meta {
   font-family: var(--font-mono);
   font-size: 0.75rem;
