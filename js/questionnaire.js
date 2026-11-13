@@ -37,8 +37,8 @@
     submit: { en: 'Send', de: 'Absenden' },
     submitting: { en: 'Sending…', de: 'Wird gesendet…' },
     privacy: {
-      en: 'By submitting, you agree that Invisyne may contact you about your enquiry. See our <a href="https://www.dr-ecklebe.de/en/privacy-policy" target="_blank" rel="noopener">privacy policy</a>.',
-      de: 'Mit dem Absenden stimmen Sie zu, dass Invisyne Sie zu Ihrer Anfrage kontaktieren darf. Siehe unsere <a href="https://www.dr-ecklebe.de/datenschutz/" target="_blank" rel="noopener">Datenschutzerklärung</a>.',
+      en: 'By submitting, you agree that Invisyne may contact you about your enquiry. See our <a href="/privacy.html">privacy policy</a>.',
+      de: 'Mit dem Absenden stimmen Sie zu, dass Invisyne Sie zu Ihrer Anfrage kontaktieren darf. Siehe unsere <a href="/privacy.html">Datenschutzerklärung</a>.',
     },
     successTitle: { en: 'Thank you!', de: 'Danke!' },
     successBody: {
